@@ -31,10 +31,27 @@ function classNames(...xs) { return xs.filter(Boolean).join(" "); }
 
 // Prefer US audio if available
 function pickAudio(phonetics = []) {
-  const hasUS = phonetics.find(p => /us|american/i.test(p.audio || ""));
-  if (hasUS?.audio) return hasUS.audio;
-  const first = phonetics.find(p => p.audio);
-  return first?.audio || null;
+  console.log("Phonetics data:", phonetics); // Debug log
+  
+  // Ưu tiên audio US
+  const usAudio = phonetics.find(p => {
+    const audio = p.audio || "";
+    return audio && (audio.includes('-us.') || audio.includes('_us.') || /us/i.test(audio));
+  });
+  if (usAudio?.audio) {
+    console.log("Found US audio:", usAudio.audio);
+    return usAudio.audio;
+  }
+  
+  // Nếu không có US, lấy audio đầu tiên có sẵn
+  const anyAudio = phonetics.find(p => p.audio && p.audio.length > 0);
+  if (anyAudio?.audio) {
+    console.log("Found audio:", anyAudio.audio);
+    return anyAudio.audio;
+  }
+  
+  console.log("No audio found");
+  return null;
 }
 
 async function fetchDatamuseCandidate(seenSet) {
@@ -72,24 +89,45 @@ async function translateTextENtoVI(text) {
 
 function speak(text, lang = "en-US") {
   try {
+    console.log("Speaking:", text, "Language:", lang); // Debug log
+    
+    // Cancel any ongoing speech
+    window.speechSynthesis.cancel();
+    
     const utter = new SpeechSynthesisUtterance(text);
     utter.lang = lang;
+    utter.rate = 0.9; // Slightly slower for clearer pronunciation
+    utter.pitch = 1;
+    utter.volume = 1;
+    
+    // Try to get US voice if available
     if (lang.startsWith("en")) {
       const voices = window.speechSynthesis.getVoices();
-      const usVoice = voices.find(v => /en-US/i.test(v.lang));
-      if (usVoice) utter.voice = usVoice;
+      console.log("Available voices:", voices.length);
+      
+      const usVoice = voices.find(v => v.lang === "en-US" && v.default) || 
+                      voices.find(v => v.lang === "en-US") ||
+                      voices.find(v => v.lang.startsWith("en"));
+      if (usVoice) {
+        utter.voice = usVoice;
+        console.log("Using voice:", usVoice.name);
+      }
     }
-    window.speechSynthesis.cancel();
+    
     window.speechSynthesis.speak(utter);
-  } catch {}
+    console.log("Speech synthesis started");
+  } catch (err) {
+    console.error("Lỗi phát âm:", err);
+  }
 }
 
-function SmallButton({ onClick, title, children }) {
+function SmallButton({ onClick, title, children, className = "" }) {
   return (
     <button
       onClick={onClick}
-      className="px-3 py-1 rounded-xl text-sm shadow-sm border border-gray-200 hover:bg-gray-50 active:scale-[0.98] transition"
+      className={`px-3 py-1 rounded-xl text-sm shadow-sm border border-gray-200 hover:bg-gray-50 active:scale-[0.98] transition ${className}`}
       title={title}
+      type="button"
     >{children}</button>
   );
 }
@@ -178,7 +216,19 @@ export default function App() {
 
   const seenList = useMemo(() => Array.from(seen).sort(), [seen]);
 
-  useEffect(() => { loadWord(); }, []);
+  useEffect(() => { 
+    // Load voices for speech synthesis
+    if ('speechSynthesis' in window) {
+      // Chrome loads voices asynchronously
+      window.speechSynthesis.getVoices();
+      if (window.speechSynthesis.onvoiceschanged !== undefined) {
+        window.speechSynthesis.onvoiceschanged = () => {
+          window.speechSynthesis.getVoices();
+        };
+      }
+    }
+    loadWord(); 
+  }, []);
 
   async function loadWord() {
     setLoading(true); setError("");
@@ -204,6 +254,8 @@ export default function App() {
   }
 
   async function setFromDictionary(candidate, dict) {
+    console.log("Dictionary data for", candidate, dict); // Debug log
+    
     const meanings = dict.meanings || [];
     
     // Lấy nhiều định nghĩa tiếng Anh từ các meanings khác nhau
@@ -229,7 +281,15 @@ export default function App() {
     const mainPos = firstMeaning?.partOfSpeech || "";
     
     const phonetic = dict.phonetic || dict.phonetics?.[0]?.text || "";
-    const audioUrl = pickAudio(dict.phonetics || []);
+    let audioUrl = pickAudio(dict.phonetics || []);
+    
+    // Validate audio URL
+    if (audioUrl && !audioUrl.startsWith('http')) {
+      console.log("Invalid audio URL:", audioUrl);
+      audioUrl = null; // Invalid URL, use Web Speech instead
+    }
+    
+    console.log("Final audioUrl:", audioUrl); // Debug log
 
     // Lấy nhiều nghĩa tiếng Việt
     const wordTranslations = await fetchVietnameseMeanings(candidate, allDefinitions);
@@ -359,16 +419,50 @@ export default function App() {
   }
 
   function AudioButton() {
-    if (word?.audioUrl) {
-      return (
-        <SmallButton title="Phát âm (audio)">
-          <span onClick={() => { const a = new Audio(word.audioUrl); a.play(); }}>🔊</span>
-        </SmallButton>
-      );
-    }
+    const handleAudioClick = async () => {
+      console.log("Audio button clicked, audioUrl:", word?.audioUrl); // Debug log
+      
+      if (word?.audioUrl) {
+        try {
+          const audio = new Audio(word.audioUrl);
+          
+          // Handle errors
+          audio.onerror = (e) => {
+            console.error("Audio URL error, falling back to Web Speech:", e);
+            speak(word.text, "en-US");
+          };
+          
+          // Try to play
+          console.log("Attempting to play audio:", word.audioUrl);
+          const playPromise = audio.play();
+          
+          if (playPromise !== undefined) {
+            playPromise
+              .then(() => {
+                console.log("Audio playing successfully");
+              })
+              .catch((error) => {
+                console.error("Play promise rejected:", error);
+                // Fallback to Web Speech
+                speak(word.text, "en-US");
+              });
+          }
+        } catch (err) {
+          console.error("Audio initialization error, using Web Speech:", err);
+          speak(word.text, "en-US");
+        }
+      } else {
+        console.log("No audio URL, using Web Speech");
+        speak(word.text, "en-US");
+      }
+    };
+
     return (
-      <SmallButton title="Phát âm (Web Speech)" onClick={() => speak(word.text, "en-US")}>
-        🔈
+      <SmallButton 
+        title="Phát âm" 
+        onClick={handleAudioClick}
+      >
+        {word?.audioUrl ? '🔊' : '🔈'}
       </SmallButton>
     );
   }
