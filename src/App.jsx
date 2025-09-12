@@ -170,6 +170,8 @@ export default function App() {
   const [related, setRelated] = useState({ n: [], v: [], adj: [], adv: [] });
   const [syns, setSyns] = useState([]);
   const [showSeen, setShowSeen] = useState(false);
+  const [definitionVI, setDefinitionVI] = useState("");
+  const [showingDefinitionVI, setShowingDefinitionVI] = useState(false);
   const cardRef = useRef(null);
 
   usePointerSwipe(cardRef, { onSwipeLeft: handleSwipeLeft });
@@ -180,6 +182,9 @@ export default function App() {
 
   async function loadWord() {
     setLoading(true); setError("");
+    // Reset definition states when loading new word
+    setDefinitionVI("");
+    setShowingDefinitionVI(false);
     try {
       for (let i = 0; i < 8; i++) {
         const candidate = await fetchDatamuseCandidate(seen);
@@ -208,6 +213,10 @@ export default function App() {
 
     // Dịch trực tiếp từ sang tiếng Việt
     const wordTranslations = await translateTextENtoVI(candidate);
+    
+    // Reset definition state
+    setDefinitionVI("");
+    setShowingDefinitionVI(false);
     
     setWord({ text: candidate, pos, phonetic, audioUrl, definitionEN, wordTranslations });
 
@@ -302,10 +311,24 @@ export default function App() {
     }
   }
 
+  async function toggleDefinition() {
+    if (!word?.definitionEN) return;
+    
+    if (showingDefinitionVI) {
+      setShowingDefinitionVI(false);
+    } else {
+      if (!definitionVI) {
+        const translated = await translateTextENtoVI(word.definitionEN);
+        setDefinitionVI(translated);
+      }
+      setShowingDefinitionVI(true);
+    }
+  }
+
   function openChatGPTExamples() {
     if (!word?.text) return;
     
-    const prompt = `cho tôi 6 ví dụ và 6 đoạn hội thoại về từ ${word.text}`;
+    const prompt = `cho tôi 4 ví dụ và 4 đoạn hội thoại về từ ${word.text}`;
     const encodedPrompt = encodeURIComponent(prompt);
     const chatGPTUrl = `https://chatgpt.com/?q=${encodedPrompt}`;
     
@@ -354,10 +377,20 @@ export default function App() {
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-3">
-                  <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
-                    <div className="text-xs uppercase tracking-wide text-slate-500">Định nghĩa (EN)</div>
-                    <div className="mt-1">{word.definitionEN || "(không có)"}</div>
-                  </div>
+                  <button 
+                    onClick={toggleDefinition}
+                    data-noswipe="true"
+                    className="p-3 rounded-xl bg-slate-50 border border-slate-200 hover:bg-slate-100 transition text-left cursor-pointer"
+                  >
+                    <div className="text-xs uppercase tracking-wide text-slate-500">
+                      Định nghĩa {showingDefinitionVI ? "(VI)" : "(EN)"} - Tap để {showingDefinitionVI ? "xem tiếng Anh" : "dịch"}
+                    </div>
+                    <div className="mt-1">
+                      {showingDefinitionVI 
+                        ? (definitionVI || "Đang dịch...")
+                        : (word.definitionEN || "(không có)")}
+                    </div>
+                  </button>
                   <div className="p-3 rounded-xl bg-green-50 border border-green-200">
                     <div className="text-xs uppercase tracking-wide text-green-700">Nghĩa tiếng Việt</div>
                     <div className="mt-1 font-medium">{word.wordTranslations || "(đang dịch...)"}</div>
