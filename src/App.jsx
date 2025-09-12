@@ -1,7 +1,14 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 
 /**
- * Vocab Swipe — English↔Vietnamese
+ * Vocab Swipe — English↔Vietnamese (Fresh build)
+ * - Lấy từ theo chủ đề đời sống/công việc/xã hội (Datamuse)
+ * - Định nghĩa + phiên âm + (ưu tiên) audio US (Free Dictionary)
+ * - Dịch EN→VI (MyMemory)
+ * - 3 ví dụ: chạm để EN⇄VI, nút đọc câu ví dụ
+ * - Quẹt trái: lưu vào "Đã xem" + lấy từ mới (không trùng)
+ * - Drawer danh sách đã xem: allow remove
+ * - Chip các loại từ liên quan: noun/verb/adj/adv; tap mở card mới
  */
 
 // ---------------- Utilities ----------------
@@ -219,7 +226,7 @@ export default function App() {
     const definitionVI = definitionEN ? await translateTextENtoVI(definitionEN) : "";
     setWord({ text: candidate, pos, phonetic, audioUrl, definitionEN, definitionVI, examples });
 
-    // Related POS + synonyms
+    // Related POS chips
     Promise.all([fetchRelatedPOS(candidate), fetchSynonyms(candidate)])
       .then(([rel, syn]) => { setRelated(rel); setSyns(syn); })
       .catch(() => { setRelated({ n: [], v: [], adj: [], adv: [] }); setSyns([]); })
@@ -298,6 +305,8 @@ export default function App() {
   }
 
   async function loadSpecificWord(term) {
+    // Khi mở từ mới từ chips/đồng nghĩa → tự lưu từ hiện tại vào "Đã xem"
+    if (word?.text) addToSeen(word.text);
     setLoading(true); setError("");
     try {
       const dict = await fetchDictionary(term);
@@ -319,7 +328,7 @@ export default function App() {
           <div className="font-semibold text-lg">Vocab Swipe</div>
           <div className="flex items-center gap-2">
             <SmallButton onClick={() => setShowSeen(s => !s)} title="Xem danh sách đã xem">📚 Đã xem ({seen.size})</SmallButton>
-            <SmallButton onClick={() => loadWord()} title="Lấy từ mới">🔄 Từ mới</SmallButton>
+            <SmallButton onClick={() => { if (word?.text) addToSeen(word.text); loadWord(); }} title="Lấy từ mới">🔄 Từ mới</SmallButton>
           </div>
         </div>
       </div>
@@ -347,7 +356,7 @@ export default function App() {
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <div className="text-3xl font-bold tracking-tight">{word.text}</div>
-                    <div className="text-slate-500 mt-1">{word.pos} {word.phonetic && <span className="ml-2">/{String(word.phonetic).replaceAll('/', '')}/</span>}</div>
+                    <div className="text-slate-500 mt-1">{word.pos} {word.phonetic && <span className="ml-2">/{String(word.phonetic).replace(/\//g, "")}/</span>}</div>
                   </div>
                   <div className="flex gap-2 items-center">
                     <AudioButton />
@@ -370,6 +379,8 @@ export default function App() {
                   <div className="text-sm font-medium text-slate-600 mb-2">Ví dụ hội thoại</div>
                   <ExamplesList key={word.text} word={word.text} examples={word.examples} />
                 </div>
+
+                
 
                 {/* Synonyms */}
                 <div className="mt-2">
@@ -397,15 +408,15 @@ export default function App() {
             <div className="absolute inset-0 bg-black/30" onClick={() => setShowSeen(false)} />
             <div className="absolute right-0 top-0 h-full w-full max-w-md bg-white shadow-xl border-l border-slate-200 flex flex-col">
               <div className="p-4 border-b border-slate-200 flex items-center justify-between">
-                <div className="font-semibold">Danh sách đã xem ({Array.from(seen).length})</div>
+                <div className="font-semibold">Danh sách đã xem ({seenList.length})</div>
                 <SmallButton onClick={() => setShowSeen(false)}>Đóng</SmallButton>
               </div>
               <div className="p-3 overflow-y-auto flex-1">
-                {Array.from(seen).length === 0 && (
+                {seenList.length === 0 && (
                   <div className="text-sm text-slate-500 p-3">Chưa có từ nào.</div>
                 )}
                 <ul className="space-y-2">
-                  {Array.from(seen).sort().map(it => (
+                  {seenList.map(it => (
                     <li key={it} className="flex items-center justify-between gap-3 border border-slate-200 rounded-xl px-3 py-2">
                       <button className="font-medium underline hover:no-underline" onClick={() => { loadSpecificWord(it); setShowSeen(false); }} title="Mở từ này">{it}</button>
                       <div className="flex items-center gap-2">
