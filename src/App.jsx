@@ -226,7 +226,6 @@ export default function App() {
     const definitionVI = definitionEN ? await translateTextENtoVI(definitionEN) : "";
     setWord({ text: candidate, pos, phonetic, audioUrl, definitionEN, definitionVI, examples });
 
-    // Related POS chips
     Promise.all([fetchRelatedPOS(candidate), fetchSynonyms(candidate)])
       .then(([rel, syn]) => { setRelated(rel); setSyns(syn); })
       .catch(() => { setRelated({ n: [], v: [], adj: [], adv: [] }); setSyns([]); })
@@ -305,7 +304,6 @@ export default function App() {
   }
 
   async function loadSpecificWord(term) {
-    // Khi mở từ mới từ chips/đồng nghĩa → tự lưu từ hiện tại vào "Đã xem"
     if (word?.text) addToSeen(word.text);
     setLoading(true); setError("");
     try {
@@ -319,10 +317,8 @@ export default function App() {
     }
   }
 
-  // ---------------- UI ----------------
   return (
     <div className="min-h-screen w-full bg-gradient-to-b from-white to-slate-50 text-slate-800">
-      {/* Header */}
       <div className="sticky top-0 z-10 backdrop-blur bg-white/70 border-b border-slate-200">
         <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
           <div className="font-semibold text-lg">Vocab Swipe</div>
@@ -333,30 +329,19 @@ export default function App() {
         </div>
       </div>
 
-      {/* Body */}
       <div className="max-w-3xl mx-auto px-4 py-6">
-        {error && (
-          <div className="mb-4 p-3 rounded-xl border border-rose-200 bg-rose-50 text-rose-700">{error}</div>
-        )}
+        {error && (<div className="mb-4 p-3 rounded-xl border border-rose-200 bg-rose-50 text-rose-700">{error}</div>)}
 
-        {/* Word Card */}
         <div ref={cardRef} className="select-none">
-          <div className={classNames(
-            "rounded-2xl shadow-sm border border-slate-200 bg-white p-6 transition will-change-transform",
-            loading && "opacity-70"
-          )}>
-            {!word && (
-              <div className="text-center py-16">
-                <div className="animate-pulse text-sm text-slate-500">Đang tải từ mới…</div>
-              </div>
-            )}
+          <div className={classNames("rounded-2xl shadow-sm border border-slate-200 bg-white p-6 transition will-change-transform", loading && "opacity-70")}>
+            {!word && (<div className="text-center py-16"><div className="animate-pulse text-sm text-slate-500">Đang tải từ mới…</div></div>)}
 
             {word && (
               <div className="flex flex-col gap-4">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <div className="text-3xl font-bold tracking-tight">{word.text}</div>
-                    <div className="text-slate-500 mt-1">{word.pos} {word.phonetic && <span className="ml-2">/{String(word.phonetic).replace(/\//g, "")}/</span>}</div>
+                    <div className="text-slate-500 mt-1">{word.pos} {word.phonetic && <span className="ml-2">/{String(word.phonetic).replaceAll('/', '')}/</span>}</div>
                   </div>
                   <div className="flex gap-2 items-center">
                     <AudioButton />
@@ -380,15 +365,11 @@ export default function App() {
                   <ExamplesList key={word.text} word={word.text} examples={word.examples} />
                 </div>
 
-                
-
-                {/* Synonyms */}
                 <div className="mt-2">
                   <div className="text-sm font-medium text-slate-600 mb-2">Từ đồng nghĩa</div>
                   <SynChips syns={syns} onPick={(t) => loadSpecificWord(t)} />
                 </div>
 
-                {/* Other POS forms */}
                 <div className="mt-2">
                   <div className="text-sm font-medium text-slate-600 mb-2">Dạng từ loại khác</div>
                   <POSChips related={related} currentPos={word.pos} onPick={(t) => loadSpecificWord(t)} />
@@ -402,7 +383,6 @@ export default function App() {
           </div>
         </div>
 
-        {/* Seen Drawer */}
         {showSeen && (
           <div className="fixed inset-0 z-20">
             <div className="absolute inset-0 bg-black/30" onClick={() => setShowSeen(false)} />
@@ -412,9 +392,7 @@ export default function App() {
                 <SmallButton onClick={() => setShowSeen(false)}>Đóng</SmallButton>
               </div>
               <div className="p-3 overflow-y-auto flex-1">
-                {seenList.length === 0 && (
-                  <div className="text-sm text-slate-500 p-3">Chưa có từ nào.</div>
-                )}
+                {seenList.length === 0 && (<div className="text-sm text-slate-500 p-3">Chưa có từ nào.</div>)}
                 <ul className="space-y-2">
                   {seenList.map(it => (
                     <li key={it} className="flex items-center justify-between gap-3 border border-slate-200 rounded-xl px-3 py-2">
@@ -431,20 +409,14 @@ export default function App() {
         )}
       </div>
 
-      <footer className="py-6 text-center text-xs text-slate-500">
-        Nguồn dữ liệu: Datamuse, Free Dictionary API, MyMemory Translate.
-      </footer>
+      <footer className="py-6 text-center text-xs text-slate-500">Nguồn dữ liệu: Datamuse, Free Dictionary API, MyMemory Translate.</footer>
     </div>
   );
 }
 
-// ---------------- Subcomponents ----------------
 function ExamplesList({ word, examples }) {
   const [state, setState] = useState(() => examples.map(e => ({ en: e.en, vi: null, showing: "en" })));
-  // Ensure examples reset when the main word changes
-  useEffect(() => {
-    setState(examples.map(e => ({ en: e.en, vi: null, showing: "en" })));
-  }, [word, examples]);
+  useEffect(() => { setState(examples.map(e => ({ en: e.en, vi: null, showing: "en" }))); }, [word, examples]);
 
   async function toggle(i) {
     setState(prev => prev.map((ex, idx) => {
@@ -530,7 +502,6 @@ function POSChips({ related, onPick, currentPos }) {
 
   return (
     <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
-      {/* Current word POS */}
       <div className="mb-3 flex items-center gap-2">
         <span className="text-xs uppercase tracking-wide text-slate-500">Từ hiện tại:</span>
         <span className="px-2 py-0.5 text-sm rounded-lg border border-slate-200 bg-white">
