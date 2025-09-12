@@ -166,11 +166,11 @@ export default function App() {
   const [seen, setSeen] = useState(() => loadSeen());
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [word, setWord] = useState(null); // {text,pos,phonetic,audioUrl,definitionEN,wordTranslations}
+  const [word, setWord] = useState(null); // {text,pos,phonetic,audioUrl,definitions,wordTranslations}
   const [related, setRelated] = useState({ n: [], v: [], adj: [], adv: [] });
   const [syns, setSyns] = useState([]);
   const [showSeen, setShowSeen] = useState(false);
-  const [definitionVI, setDefinitionVI] = useState("");
+  const [definitionVI, setDefinitionVI] = useState([]);
   const [showingDefinitionVI, setShowingDefinitionVI] = useState(false);
   const cardRef = useRef(null);
 
@@ -183,7 +183,7 @@ export default function App() {
   async function loadWord() {
     setLoading(true); setError("");
     // Reset definition states when loading new word
-    setDefinitionVI("");
+    setDefinitionVI([]);
     setShowingDefinitionVI(false);
     try {
       for (let i = 0; i < 8; i++) {
@@ -205,24 +205,100 @@ export default function App() {
 
   async function setFromDictionary(candidate, dict) {
     const meanings = dict.meanings || [];
+    
+    // Lấy nhiều định nghĩa tiếng Anh từ các meanings khác nhau
+    const allDefinitions = [];
+    const posMap = new Map(); // Track POS for each definition
+    
+    for (const meaning of meanings) {
+      const pos = meaning?.partOfSpeech || "";
+      const defs = meaning?.definitions || [];
+      for (let i = 0; i < Math.min(2, defs.length); i++) {
+        if (defs[i]?.definition) {
+          allDefinitions.push({
+            text: defs[i].definition,
+            pos: pos,
+            example: defs[i].example || null
+          });
+        }
+      }
+    }
+    
+    // Lấy POS chính (xuất hiện nhiều nhất)
     const firstMeaning = meanings.find(m => m?.definitions?.length) || meanings[0];
-    const pos = firstMeaning?.partOfSpeech || "";
-    const definitionEN = firstMeaning?.definitions?.[0]?.definition || "";
+    const mainPos = firstMeaning?.partOfSpeech || "";
+    
     const phonetic = dict.phonetic || dict.phonetics?.[0]?.text || "";
     const audioUrl = pickAudio(dict.phonetics || []);
 
-    // Dịch trực tiếp từ sang tiếng Việt
-    const wordTranslations = await translateTextENtoVI(candidate);
+    // Lấy nhiều nghĩa tiếng Việt
+    const wordTranslations = await fetchVietnameseMeanings(candidate, allDefinitions);
     
     // Reset definition state
-    setDefinitionVI("");
+    setDefinitionVI([]);
     setShowingDefinitionVI(false);
     
-    setWord({ text: candidate, pos, phonetic, audioUrl, definitionEN, wordTranslations });
+    setWord({ 
+      text: candidate, 
+      pos: mainPos, 
+      phonetic, 
+      audioUrl, 
+      definitions: allDefinitions.slice(0, 3), // Giới hạn 3 định nghĩa
+      wordTranslations 
+    });
 
     Promise.all([fetchRelatedPOS(candidate), fetchSynonyms(candidate)])
       .then(([rel, syn]) => { setRelated(rel); setSyns(syn); })
       .catch(() => { setRelated({ n: [], v: [], adj: [], adv: [] }); setSyns([]); })
+  }
+
+  async function fetchVietnameseMeanings(word, definitions) {
+    try {
+      // 1. Dịch trực tiếp từ để lấy các nghĩa cơ bản
+      const directUrl = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(word)}&langpair=en|vi`;
+      const directRes = await fetch(directUrl);
+      const directData = await directRes.json();
+      const directTranslation = directData?.responseData?.translatedText || "";
+      
+      // 2. Lấy các matches khác (nếu có) để có nhiều nghĩa hơn
+      const matches = directData?.matches || [];
+      const uniqueMeanings = new Set();
+      
+      // Thêm nghĩa chính
+      if (directTranslation) {
+        uniqueMeanings.add(directTranslation.toLowerCase());
+      }
+      
+      // Thêm các nghĩa từ matches (lấy tối đa 3-4 nghĩa khác nhau)
+      for (const match of matches) {
+        if (match?.translation && uniqueMeanings.size < 4) {
+          const trans = match.translation.toLowerCase().trim();
+          if (trans && trans !== directTranslation.toLowerCase()) {
+            uniqueMeanings.add(trans);
+          }
+        }
+      }
+      
+      // 3. Nếu chỉ có 1 nghĩa, thử tách theo dấu phẩy/chấm phẩy
+      if (uniqueMeanings.size === 1 && directTranslation) {
+        const parts = directTranslation.split(/[,;\/]/).map(p => p.trim()).filter(p => p);
+        if (parts.length > 1) {
+          uniqueMeanings.clear();
+          parts.slice(0, 4).forEach(p => uniqueMeanings.add(p.toLowerCase()));
+        }
+      }
+      
+      // Chuyển về array và format lại
+      const finalMeanings = Array.from(uniqueMeanings)
+        .map(m => m.charAt(0).toUpperCase() + m.slice(1))
+        .slice(0, 3); // Giới hạn 3 nghĩa
+      
+      return finalMeanings.join("; ");
+    } catch (error) {
+      console.error("Error fetching Vietnamese meanings:", error);
+      // Fallback to simple translation
+      return await translateTextENtoVI(word);
+    }
   }
 
   async function fetchRelatedPOS(base) {
@@ -300,6 +376,9 @@ export default function App() {
   async function loadSpecificWord(term) {
     if (word?.text) addToSeen(word.text);
     setLoading(true); setError("");
+    // Reset definition states
+    setDefinitionVI([]);
+    setShowingDefinitionVI(false);
     try {
       const dict = await fetchDictionary(term);
       if (!dict) throw new Error("Không tìm thấy từ: " + term);
@@ -312,14 +391,17 @@ export default function App() {
   }
 
   async function toggleDefinition() {
-    if (!word?.definitionEN) return;
+    if (!word?.definitions || word.definitions.length === 0) return;
     
     if (showingDefinitionVI) {
       setShowingDefinitionVI(false);
     } else {
-      if (!definitionVI) {
-        const translated = await translateTextENtoVI(word.definitionEN);
-        setDefinitionVI(translated);
+      if (definitionVI.length === 0) {
+        // Dịch tất cả các định nghĩa
+        const translations = await Promise.all(
+          word.definitions.map(def => translateTextENtoVI(def.text))
+        );
+        setDefinitionVI(translations);
       }
       setShowingDefinitionVI(true);
     }
@@ -377,23 +459,65 @@ export default function App() {
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-3">
-                  <button 
+                  <div 
                     onClick={toggleDefinition}
                     data-noswipe="true"
-                    className="p-3 rounded-xl bg-slate-50 border border-slate-200 hover:bg-slate-100 transition text-left cursor-pointer"
+                    className="p-3 rounded-xl bg-slate-50 border border-slate-200 hover:bg-slate-100 transition cursor-pointer"
                   >
-                    <div className="text-xs uppercase tracking-wide text-slate-500">
+                    <div className="text-xs uppercase tracking-wide text-slate-500 mb-2">
                       Định nghĩa {showingDefinitionVI ? "(VI)" : "(EN)"} - Tap để {showingDefinitionVI ? "xem tiếng Anh" : "dịch"}
                     </div>
-                    <div className="mt-1">
-                      {showingDefinitionVI 
-                        ? (definitionVI || "Đang dịch...")
-                        : (word.definitionEN || "(không có)")}
+                    <div className="space-y-2 max-h-48 overflow-y-auto">
+                      {showingDefinitionVI ? (
+                        definitionVI.length > 0 ? (
+                          definitionVI.map((def, idx) => (
+                            <div key={idx} className="text-sm">
+                              <span className="font-medium text-slate-600">{idx + 1}.</span> {def}
+                            </div>
+                          ))
+                        ) : (
+                          <div className="text-sm text-slate-500">Đang dịch...</div>
+                        )
+                      ) : (
+                        word?.definitions && word.definitions.length > 0 ? (
+                          word.definitions.map((def, idx) => (
+                            <div key={idx} className="space-y-1">
+                              <div className="text-sm">
+                                <span className="font-medium text-slate-600">{idx + 1}.</span>
+                                {def.pos && <span className="ml-1 text-xs text-slate-500">({def.pos})</span>}
+                                <span className="ml-1">{def.text}</span>
+                              </div>
+                              {def.example && (
+                                <div className="text-xs text-slate-500 italic ml-4">
+                                  Ex: {def.example}
+                                </div>
+                              )}
+                            </div>
+                          ))
+                        ) : (
+                          <div className="text-sm text-slate-500">(không có định nghĩa)</div>
+                        )
+                      )}
                     </div>
-                  </button>
+                  </div>
                   <div className="p-3 rounded-xl bg-green-50 border border-green-200">
-                    <div className="text-xs uppercase tracking-wide text-green-700">Nghĩa tiếng Việt</div>
-                    <div className="mt-1 font-medium">{word.wordTranslations || "(đang dịch...)"}</div>
+                    <div className="text-xs uppercase tracking-wide text-green-700 mb-2">Nghĩa tiếng Việt</div>
+                    <div className="space-y-1">
+                      {word?.wordTranslations ? (
+                        word.wordTranslations.split(/[;]/).map((meaning, idx) => {
+                          const trimmedMeaning = meaning.trim();
+                          if (!trimmedMeaning) return null;
+                          return (
+                            <div key={idx} className="flex items-start gap-2">
+                              <span className="text-green-600 font-medium text-sm">•</span>
+                              <span className="text-sm font-medium">{trimmedMeaning}</span>
+                            </div>
+                          );
+                        }).filter(Boolean)
+                      ) : (
+                        <div className="text-sm text-slate-500">(đang dịch...)</div>
+                      )}
+                    </div>
                   </div>
                 </div>
 
