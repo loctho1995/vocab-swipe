@@ -18,6 +18,19 @@ const TOPIC_SEEDS = [
   "travel","environment","productivity","management","negotiation","teamwork",
 ];
 
+// Thêm danh sách động từ và tính từ phổ biến để tăng tính đa dạng
+const COMMON_VERBS = [
+  "make","take","give","get","keep","think","feel","become","leave","understand",
+  "believe","happen","write","provide","sit","lose","pay","meet","include","continue",
+  "learn","change","lead","understand","watch","follow","stop","create","speak","spend"
+];
+
+const COMMON_ADJECTIVES = [
+  "good","new","first","last","long","great","little","own","other","old",
+  "right","big","high","different","small","large","next","early","young","important",
+  "public","bad","same","able","political","late","general","full","far","low"
+];
+
 const STORAGE_KEYS = { SEEN: "vocab_seen_words_v1" };
 
 function loadSeen() {
@@ -56,13 +69,61 @@ function pickAudio(phonetics = []) {
 
 async function fetchDatamuseCandidate(seenSet) {
   for (let attempt = 0; attempt < 6; attempt++) {
-    const seed = TOPIC_SEEDS[Math.floor(Math.random() * TOPIC_SEEDS.length)];
-    const url = `https://api.datamuse.com/words?ml=${encodeURIComponent(seed)}&md=f&max=50`;
-    const words = await fetch(url).then(r => r.json());
-    const candidates = words
-      .map(w => w.word)
-      .filter(w => /^[a-zA-Z]{3,}$/.test(w))
-      .filter(w => !seenSet.has(w.toLowerCase()));
+    let candidates = [];
+    
+    // Xen kẽ giữa các nguồn khác nhau để đa dạng từ loại
+    const strategy = attempt % 3;
+    
+    if (strategy === 0) {
+      // Lấy từ từ topic seeds với metadata
+      const seed = TOPIC_SEEDS[Math.floor(Math.random() * TOPIC_SEEDS.length)];
+      const url = `https://api.datamuse.com/words?ml=${encodeURIComponent(seed)}&md=fp&max=100`;
+      const words = await fetch(url).then(r => r.json());
+      
+      // Ưu tiên những từ có nhiều dạng từ loại (có cả tags n, v, adj)
+      const versatileWords = words.filter(w => {
+        const tags = w.tags || [];
+        const hasMultiplePOS = (tags.includes('n') && tags.includes('v')) ||
+                               (tags.includes('v') && tags.includes('adj')) ||
+                               (tags.includes('n') && tags.includes('adj'));
+        return hasMultiplePOS;
+      });
+      
+      // Nếu có từ đa năng, ưu tiên chúng
+      const sourceWords = versatileWords.length > 0 ? versatileWords : words;
+      
+      candidates = sourceWords
+        .map(w => w.word)
+        .filter(w => /^[a-zA-Z]{3,}$/.test(w))
+        .filter(w => !seenSet.has(w.toLowerCase()));
+    } else if (strategy === 1) {
+      // Lấy động từ liên quan
+      const verb = COMMON_VERBS[Math.floor(Math.random() * COMMON_VERBS.length)];
+      const url = `https://api.datamuse.com/words?rel_syn=${encodeURIComponent(verb)}&md=p&max=50`;
+      const words = await fetch(url).then(r => r.json());
+      candidates = words
+        .filter(w => {
+          const tags = w.tags || [];
+          return tags.includes('v'); // Chỉ lấy động từ
+        })
+        .map(w => w.word)
+        .filter(w => /^[a-zA-Z]{3,}$/.test(w))
+        .filter(w => !seenSet.has(w.toLowerCase()));
+    } else {
+      // Lấy tính từ liên quan
+      const adj = COMMON_ADJECTIVES[Math.floor(Math.random() * COMMON_ADJECTIVES.length)];
+      const url = `https://api.datamuse.com/words?rel_syn=${encodeURIComponent(adj)}&md=p&max=50`;
+      const words = await fetch(url).then(r => r.json());
+      candidates = words
+        .filter(w => {
+          const tags = w.tags || [];
+          return tags.includes('adj'); // Chỉ lấy tính từ
+        })
+        .map(w => w.word)
+        .filter(w => /^[a-zA-Z]{3,}$/.test(w))
+        .filter(w => !seenSet.has(w.toLowerCase()));
+    }
+    
     if (candidates.length) {
       const pick = candidates[Math.floor(Math.random() * candidates.length)];
       return pick.toLowerCase();
@@ -258,27 +319,40 @@ export default function App() {
     
     const meanings = dict.meanings || [];
     
-    // Lấy nhiều định nghĩa tiếng Anh từ các meanings khác nhau
-    const allDefinitions = [];
-    const posMap = new Map(); // Track POS for each definition
+    // Lấy TẤT CẢ các từ loại của từ này
+    const allPOS = new Set();
+    const definitionsByPOS = new Map();
     
     for (const meaning of meanings) {
       const pos = meaning?.partOfSpeech || "";
-      const defs = meaning?.definitions || [];
-      for (let i = 0; i < Math.min(2, defs.length); i++) {
-        if (defs[i]?.definition) {
-          allDefinitions.push({
-            text: defs[i].definition,
-            pos: pos,
-            example: defs[i].example || null
-          });
+      if (pos) {
+        allPOS.add(pos);
+        
+        if (!definitionsByPOS.has(pos)) {
+          definitionsByPOS.set(pos, []);
+        }
+        
+        const defs = meaning?.definitions || [];
+        for (let i = 0; i < Math.min(2, defs.length); i++) {
+          if (defs[i]?.definition) {
+            definitionsByPOS.get(pos).push({
+              text: defs[i].definition,
+              pos: pos,
+              example: defs[i].example || null
+            });
+          }
         }
       }
     }
     
-    // Lấy POS chính (xuất hiện nhiều nhất)
-    const firstMeaning = meanings.find(m => m?.definitions?.length) || meanings[0];
-    const mainPos = firstMeaning?.partOfSpeech || "";
+    // Tạo danh sách định nghĩa tổng hợp từ tất cả các POS
+    const allDefinitions = [];
+    for (const [pos, defs] of definitionsByPOS.entries()) {
+      allDefinitions.push(...defs.slice(0, 2)); // Lấy tối đa 2 định nghĩa mỗi POS
+    }
+    
+    // POS string hiển thị tất cả các từ loại
+    const allPOSString = Array.from(allPOS).join(", ");
     
     const phonetic = dict.phonetic || dict.phonetics?.[0]?.text || "";
     let audioUrl = pickAudio(dict.phonetics || []);
@@ -300,10 +374,11 @@ export default function App() {
     
     setWord({ 
       text: candidate, 
-      pos: mainPos, 
+      pos: allPOSString, // Hiển thị tất cả các từ loại
+      allPOS: Array.from(allPOS), // Lưu danh sách các từ loại
       phonetic, 
       audioUrl, 
-      definitions: allDefinitions.slice(0, 3), // Giới hạn 3 định nghĩa
+      definitions: allDefinitions.slice(0, 4), // Tăng lên 4 định nghĩa
       wordTranslations 
     });
 
@@ -362,10 +437,40 @@ export default function App() {
   }
 
   async function fetchRelatedPOS(base) {
-    const url = `https://api.datamuse.com/words?ml=${encodeURIComponent(base)}&md=p&max=100`;
-    const res = await fetch(url).then(r => r.json());
+    // Lấy cả các từ liên quan và các dạng từ loại của cùng từ gốc
+    const [related, forms] = await Promise.all([
+      // Lấy từ liên quan
+      fetch(`https://api.datamuse.com/words?ml=${encodeURIComponent(base)}&md=p&max=100`).then(r => r.json()),
+      // Lấy các dạng của từ gốc (như "run" -> "running", "ran", "runner")
+      fetch(`https://api.datamuse.com/words?rel_jjb=${encodeURIComponent(base)}&md=p&max=50`).then(r => r.json())
+        .then(r1 => 
+          fetch(`https://api.datamuse.com/words?rel_jja=${encodeURIComponent(base)}&md=p&max=50`).then(r => r.json())
+            .then(r2 => [...r1, ...r2])
+        )
+    ]);
+    
     const bucket = { n: [], v: [], adj: [], adv: [] };
-    for (const it of res) {
+    
+    // Xử lý các dạng của từ gốc trước (ưu tiên cao hơn)
+    for (const it of forms) {
+      if (!it.word) continue;
+      const w = it.word.toLowerCase();
+      const b = base.toLowerCase();
+      
+      // Chỉ lấy các từ có liên quan đến từ gốc (cùng gốc từ)
+      if (!w.includes(b.substring(0, Math.min(3, b.length))) && !b.includes(w.substring(0, Math.min(3, w.length)))) {
+        continue;
+      }
+      
+      const tags = it.tags || [];
+      if (tags.includes('n') && bucket.n.length < 4) bucket.n.unshift(it.word);
+      if (tags.includes('v') && bucket.v.length < 4) bucket.v.unshift(it.word);
+      if (tags.includes('adj') && bucket.adj.length < 4) bucket.adj.unshift(it.word);
+      if (tags.includes('adv') && bucket.adv.length < 4) bucket.adv.unshift(it.word);
+    }
+    
+    // Sau đó thêm các từ liên quan khác
+    for (const it of related) {
       if (!it.word || it.word.toLowerCase() === base.toLowerCase()) continue;
       const tags = it.tags || [];
       if (tags.includes('n') && bucket.n.length < 8) bucket.n.push(it.word);
@@ -373,6 +478,12 @@ export default function App() {
       if (tags.includes('adj') && bucket.adj.length < 8) bucket.adj.push(it.word);
       if (tags.includes('adv') && bucket.adv.length < 8) bucket.adv.push(it.word);
     }
+    
+    // Loại bỏ trùng lặp
+    for (const key of Object.keys(bucket)) {
+      bucket[key] = [...new Set(bucket[key])];
+    }
+    
     return bucket;
   }
 
@@ -544,7 +655,22 @@ export default function App() {
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <div className="text-3xl font-bold tracking-tight">{word.text}</div>
-                    <div className="text-slate-500 mt-1">{word.pos} {word.phonetic && <span className="ml-2">/{String(word.phonetic).replaceAll('/', '')}/</span>}</div>
+                    <div className="text-slate-500 mt-1">
+                      {word.allPOS && word.allPOS.length > 1 ? (
+                        <div className="flex flex-wrap gap-1 items-center">
+                          {word.allPOS.map((pos, idx) => (
+                            <span key={idx} className="px-2 py-0.5 text-xs rounded-lg bg-slate-100 border border-slate-200">
+                              {pos}
+                            </span>
+                          ))}
+                          {word.phonetic && <span className="ml-2">/{String(word.phonetic).replaceAll('/', '')}/</span>}
+                        </div>
+                      ) : (
+                        <>
+                          {word.pos} {word.phonetic && <span className="ml-2">/{String(word.phonetic).replaceAll('/', '')}/</span>}
+                        </>
+                      )}
+                    </div>
                   </div>
                   <div className="flex gap-2 items-center">
                     <AudioButton />
@@ -631,7 +757,7 @@ export default function App() {
 
                 <div className="mt-2">
                   <div className="text-sm font-medium text-slate-600 mb-2">Dạng từ loại khác</div>
-                  <POSChips related={related} currentPos={word.pos} onPick={(t) => loadSpecificWord(t)} />
+                  <POSChips related={related} word={word} onPick={(t) => loadSpecificWord(t)} />
                 </div>
 
                 <div className="text-xs text-slate-500 mt-2">
@@ -691,13 +817,21 @@ function SynChips({ syns, onPick }){
   );
 }
 
-function POSChips({ related, onPick, currentPos }) {
-  const Section = ({ label, items }) => (
+function POSChips({ related, onPick, word }) {
+  const Section = ({ label, items, highlight = false }) => (
     <div className="mb-2">
-      <div className="text-xs uppercase tracking-wide text-slate-500 mb-1">{label}</div>
+      <div className="text-xs uppercase tracking-wide text-slate-500 mb-1">
+        {label} {highlight && <span className="text-green-600">(cùng gốc)</span>}
+      </div>
       <div className="flex flex-wrap gap-2">
         {items && items.length > 0 ? items.map(w => (
-          <button key={w} onClick={() => onPick(w)} className="px-2 py-1 border border-slate-200 rounded-lg text-sm hover:bg-slate-50 active:scale-[0.98]">
+          <button 
+            key={w} 
+            onClick={() => onPick(w)} 
+            className={`px-2 py-1 border rounded-lg text-sm hover:bg-slate-50 active:scale-[0.98] ${
+              highlight ? 'border-green-300 bg-green-50' : 'border-slate-200'
+            }`}
+          >
             {w}
           </button>
         )) : <span className="text-xs text-slate-400">(không có)</span>}
@@ -717,11 +851,19 @@ function POSChips({ related, onPick, currentPos }) {
 
   return (
     <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
-      <div className="mb-3 flex items-center gap-2">
+      <div className="mb-3 flex items-center gap-2 flex-wrap">
         <span className="text-xs uppercase tracking-wide text-slate-500">Từ hiện tại:</span>
-        <span className="px-2 py-0.5 text-sm rounded-lg border border-slate-200 bg-white">
-          {viLabel(currentPos)}
-        </span>
+        {word?.allPOS && word.allPOS.length > 1 ? (
+          word.allPOS.map((pos, idx) => (
+            <span key={idx} className="px-2 py-0.5 text-sm rounded-lg border border-slate-200 bg-white">
+              {viLabel(pos)}
+            </span>
+          ))
+        ) : (
+          <span className="px-2 py-0.5 text-sm rounded-lg border border-slate-200 bg-white">
+            {viLabel(word?.pos)}
+          </span>
+        )}
       </div>
       {(() => {
         const posKey = (pos) => {
@@ -733,14 +875,56 @@ function POSChips({ related, onPick, currentPos }) {
           if (p.includes("adverb") || p === 'adv') return 'adv';
           return null;
         };
-        const currentKey = posKey(currentPos);
-        const order = ['n','v','adj','adv'].filter(k => k !== currentKey);
-        const labels = { n: "Danh từ (noun)", v: "Động từ (verb)", adj: "Tính từ (adjective)", adv: "Trạng từ (adverb)" };
-        const hasAny = order.some(k => (related[k]||[]).length > 0);
-        if (!hasAny) return <div className="text-xs text-slate-400">(Không có loại từ khác liên quan)</div>;
-        return order.map(k => (
-          <Section key={k} label={labels[k]} items={related[k]} />
-        ));
+        
+        // Lấy tất cả các POS của từ hiện tại
+        const currentKeys = word?.allPOS ? 
+          word.allPOS.map(p => posKey(p)).filter(Boolean) : 
+          [posKey(word?.pos)].filter(Boolean);
+        
+        // Sắp xếp: các dạng khác của từ gốc trước, sau đó là từ liên quan
+        const allKeys = ['n','v','adj','adv'];
+        const labels = { n: "Danh từ", v: "Động từ", adj: "Tính từ", adv: "Trạng từ" };
+        const hasAny = allKeys.some(k => (related[k]||[]).length > 0);
+        
+        if (!hasAny) return <div className="text-xs text-slate-400">(Không có từ liên quan)</div>;
+        
+        // Phân loại từ theo gốc từ
+        const wordRoot = word?.text ? word.text.substring(0, Math.min(4, word.text.length)).toLowerCase() : '';
+        
+        return (
+          <div>
+            <div className="text-xs text-slate-600 mb-2 font-medium">Các dạng từ loại khác:</div>
+            {allKeys.map(k => {
+              const items = related[k] || [];
+              if (items.length === 0) return null;
+              
+              // Phân loại từ cùng gốc và từ liên quan
+              const sameRoot = items.filter(w => 
+                w.toLowerCase().includes(wordRoot) || wordRoot.includes(w.substring(0, Math.min(3, w.length)).toLowerCase())
+              );
+              const otherRelated = items.filter(w => !sameRoot.includes(w));
+              
+              return (
+                <div key={k}>
+                  {sameRoot.length > 0 && (
+                    <Section 
+                      label={`${labels[k]} ${currentKeys.includes(k) ? '(hiện tại)' : ''}`} 
+                      items={sameRoot}
+                      highlight={true}
+                    />
+                  )}
+                  {otherRelated.length > 0 && (
+                    <Section 
+                      label={`${labels[k]} liên quan`} 
+                      items={otherRelated}
+                      highlight={false}
+                    />
+                  )}
+                </div>
+              );
+            }).filter(Boolean)}
+          </div>
+        );
       })()}
     </div>
   );
