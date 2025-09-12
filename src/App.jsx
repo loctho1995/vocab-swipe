@@ -4,8 +4,8 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
  * Vocab Swipe — English↔Vietnamese (Fresh build)
  * - Lấy từ theo chủ đề đời sống/công việc/xã hội (Datamuse)
  * - Định nghĩa + phiên âm + (ưu tiên) audio US (Free Dictionary)
- * - Dịch EN→VI (MyMemory)
- * - 3 ví dụ: chạm để EN⇄VI, nút đọc câu ví dụ
+ * - Dịch trực tiếp từ EN→VI (MyMemory)
+ * - Nút mở ChatGPT để xem ví dụ và hội thoại
  * - Quẹt trái: lưu vào "Đã xem" + lấy từ mới (không trùng)
  * - Drawer danh sách đã xem: allow remove
  * - Chip các loại từ liên quan: noun/verb/adj/adv; tap mở card mới
@@ -166,7 +166,7 @@ export default function App() {
   const [seen, setSeen] = useState(() => loadSeen());
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [word, setWord] = useState(null); // {text,pos,phonetic,audioUrl,definitionEN,definitionVI,examples}
+  const [word, setWord] = useState(null); // {text,pos,phonetic,audioUrl,definitionEN,wordTranslations}
   const [related, setRelated] = useState({ n: [], v: [], adj: [], adv: [] });
   const [syns, setSyns] = useState([]);
   const [showSeen, setShowSeen] = useState(false);
@@ -206,25 +206,10 @@ export default function App() {
     const phonetic = dict.phonetic || dict.phonetics?.[0]?.text || "";
     const audioUrl = pickAudio(dict.phonetics || []);
 
-    // Examples up to 3
-    const examples = [];
-    for (const m of meanings) {
-      for (const d of (m.definitions || [])) {
-        if (d.example) examples.push({ en: d.example });
-        if (examples.length >= 3) break;
-      }
-      if (examples.length >= 3) break;
-    }
-    const synthPool = [
-      `Could you explain the word "${candidate}" in this ${pos || "context"}?`,
-      `We discussed "${candidate}" during the meeting yesterday.`,
-      `This ${pos || "term"} "${candidate}" often appears in daily life.`,
-      `Do you use "${candidate}" at work?`,
-    ];
-    let k = 0; while (examples.length < 3 && k < synthPool.length) { examples.push({ en: synthPool[k++] }); }
-
-    const definitionVI = definitionEN ? await translateTextENtoVI(definitionEN) : "";
-    setWord({ text: candidate, pos, phonetic, audioUrl, definitionEN, definitionVI, examples });
+    // Dịch trực tiếp từ sang tiếng Việt
+    const wordTranslations = await translateTextENtoVI(candidate);
+    
+    setWord({ text: candidate, pos, phonetic, audioUrl, definitionEN, wordTranslations });
 
     Promise.all([fetchRelatedPOS(candidate), fetchSynonyms(candidate)])
       .then(([rel, syn]) => { setRelated(rel); setSyns(syn); })
@@ -317,6 +302,25 @@ export default function App() {
     }
   }
 
+  function openChatGPTExamples() {
+    if (!word?.text) return;
+    
+    const prompt = `cho tôi 6 ví dụ và 6 đoạn hội thoại về từ ${word.text}`;
+    const encodedPrompt = encodeURIComponent(prompt);
+    const chatGPTUrl = `https://chatgpt.com/?q=${encodedPrompt}`;
+    
+    // Copy URL vào clipboard
+    navigator.clipboard.writeText(chatGPTUrl).then(() => {
+      // Thông báo đã copy (optional)
+      console.log('URL đã được copy vào clipboard');
+    }).catch(err => {
+      console.error('Không thể copy URL:', err);
+    });
+    
+    // Mở ChatGPT trong tab mới
+    window.open(chatGPTUrl, '_blank');
+  }
+
   return (
     <div className="min-h-screen w-full bg-gradient-to-b from-white to-slate-50 text-slate-800">
       <div className="sticky top-0 z-10 backdrop-blur bg-white/70 border-b border-slate-200">
@@ -356,13 +360,17 @@ export default function App() {
                   </div>
                   <div className="p-3 rounded-xl bg-green-50 border border-green-200">
                     <div className="text-xs uppercase tracking-wide text-green-700">Nghĩa tiếng Việt</div>
-                    <div className="mt-1">{word.definitionVI || "(đang dịch / không có)"}</div>
+                    <div className="mt-1 font-medium">{word.wordTranslations || "(đang dịch...)"}</div>
                   </div>
                 </div>
 
                 <div className="mt-2">
-                  <div className="text-sm font-medium text-slate-600 mb-2">Ví dụ hội thoại</div>
-                  <ExamplesList key={word.text} word={word.text} examples={word.examples} />
+                  <button 
+                    onClick={openChatGPTExamples}
+                    className="px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 active:scale-[0.98] transition text-sm font-medium"
+                  >
+                    💬 Ví dụ và hội thoại
+                  </button>
                 </div>
 
                 <div className="mt-2">
@@ -411,50 +419,6 @@ export default function App() {
 
       <footer className="py-6 text-center text-xs text-slate-500">Nguồn dữ liệu: Datamuse, Free Dictionary API, MyMemory Translate.</footer>
     </div>
-  );
-}
-
-function ExamplesList({ word, examples }) {
-  const [state, setState] = useState(() => examples.map(e => ({ en: e.en, vi: null, showing: "en" })));
-  useEffect(() => { setState(examples.map(e => ({ en: e.en, vi: null, showing: "en" }))); }, [word, examples]);
-
-  async function toggle(i) {
-    setState(prev => prev.map((ex, idx) => {
-      if (idx !== i) return ex;
-      if (ex.showing === "en") {
-        if (!ex.vi) {
-          translateTextENtoVI(ex.en).then(t => {
-            setState(p => p.map((ex2, j) => j === i ? { ...ex2, vi: t, showing: "vi" } : ex2));
-          });
-          return { ...ex };
-        }
-        return { ...ex, showing: "vi" };
-      } else {
-        return { ...ex, showing: "en" };
-      }
-    }));
-  }
-
-  function speakExample(i) {
-    const ex = state[i];
-    const text = ex.showing === "en" ? ex.en : ex.vi || ex.en;
-    const lang = ex.showing === "en" ? "en-US" : "vi-VN";
-    speak(text, lang);
-  }
-
-  return (
-    <ul className="space-y-2">
-      {state.map((ex, i) => (
-        <li key={i} className="group border border-slate-200 rounded-xl p-3 bg-white flex items-start justify-between gap-3">
-          <button onClick={() => toggle(i)} className="text-left flex-1">
-            <div className="text-sm leading-relaxed">
-              {ex.showing === "en" ? ex.en : (ex.vi || "(đang dịch…)")}
-            </div>
-          </button>
-          <SmallButton onClick={() => speakExample(i)} title="Đọc câu ví dụ">🗣️</SmallButton>
-        </li>
-      ))}
-    </ul>
   );
 }
 
