@@ -615,7 +615,7 @@ export default function App() {
   function openChatGPTExamples() {
     if (!word?.text) return;
     
-    const prompt = `cho tôi 4 ví dụ và 4 đoạn hội thoại về từ ${word.text}`;
+    const prompt = `cho tôi các ví dụ và các đoạn hội thoại phổ biến với từ ${word.text}`;
     const encodedPrompt = encodeURIComponent(prompt);
     const chatGPTUrl = `https://chatgpt.com/?q=${encodedPrompt}`;
     
