@@ -271,7 +271,10 @@ export default function App() {
   const [showSeen, setShowSeen] = useState(false);
   const [definitionVI, setDefinitionVI] = useState([]);
   const [showingDefinitionVI, setShowingDefinitionVI] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
+  const [searchInput, setSearchInput] = useState("");
   const cardRef = useRef(null);
+  const searchInputRef = useRef(null);
 
   usePointerSwipe(cardRef, { onSwipeLeft: handleSwipeLeft });
 
@@ -290,6 +293,30 @@ export default function App() {
     }
     loadWord(); 
   }, []);
+
+  useEffect(() => {
+    if (showSearch && searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  }, [showSearch]);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Ctrl+K hoặc Cmd+K để mở tìm kiếm
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        setShowSearch(true);
+      }
+      // Escape để đóng modal
+      if (e.key === 'Escape') {
+        if (showSearch) setShowSearch(false);
+        if (showSeen) setShowSeen(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showSearch, showSeen]);
 
   async function loadWord() {
     setLoading(true); setError("");
@@ -631,12 +658,32 @@ export default function App() {
     window.open(chatGPTUrl, '_blank');
   }
 
+  async function handleSearch(e) {
+    e?.preventDefault();
+    const term = (searchInput || "").trim().toLowerCase();
+    
+    if (!term) {
+      setError("Vui lòng nhập từ cần tìm");
+      return;
+    }
+    
+    if (!/^[a-zA-Z]+$/.test(term)) {
+      setError("Vui lòng chỉ nhập các ký tự tiếng Anh");
+      return;
+    }
+    
+    setShowSearch(false);
+    setSearchInput("");
+    await loadSpecificWord(term);
+  }
+
   return (
     <div className="min-h-screen w-full bg-gradient-to-b from-white to-slate-50 text-slate-800">
       <div className="sticky top-0 z-10 backdrop-blur bg-white/70 border-b border-slate-200">
         <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
           <div className="font-semibold text-lg">Vocab Swipe</div>
           <div className="flex items-center gap-2">
+            <SmallButton onClick={() => setShowSearch(true)} title="Tìm kiếm từ (Ctrl+K)">🔍 Tìm</SmallButton>
             <SmallButton onClick={() => setShowSeen(s => !s)} title="Xem danh sách đã xem">📚 Đã xem ({seen.size})</SmallButton>
             <SmallButton onClick={() => { if (word?.text) addToSeen(word.text); loadWord(); }} title="Lấy từ mới">🔄 Từ mới</SmallButton>
           </div>
@@ -789,6 +836,86 @@ export default function App() {
                   ))}
                 </ul>
               </div>
+            </div>
+          </div>
+        )}
+
+        {showSearch && (
+          <div className="fixed inset-0 z-30 flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-black/30" onClick={() => setShowSearch(false)} />
+            <div className="relative bg-white rounded-2xl shadow-xl border border-slate-200 w-full max-w-md">
+              <form onSubmit={handleSearch} className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-xl font-semibold">Tìm kiếm từ vựng</h2>
+                  <button
+                    type="button"
+                    onClick={() => setShowSearch(false)}
+                    className="text-slate-400 hover:text-slate-600"
+                  >
+                    ✕
+                  </button>
+                </div>
+                
+                <div className="space-y-4">
+                  <div>
+                    <label htmlFor="search-input" className="block text-sm font-medium text-slate-700 mb-2">
+                      Nhập từ tiếng Anh
+                    </label>
+                    <input
+                      ref={searchInputRef}
+                      id="search-input"
+                      type="text"
+                      value={searchInput}
+                      onChange={(e) => setSearchInput(e.target.value)}
+                      placeholder="Ví dụ: happy, work, computer..."
+                      className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      autoComplete="off"
+                    />
+                  </div>
+                  
+                  <div className="flex gap-3">
+                    <button
+                      type="submit"
+                      className="flex-1 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 active:scale-[0.98] transition font-medium"
+                    >
+                      🔍 Tìm kiếm
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSearchInput("");
+                        setShowSearch(false);
+                      }}
+                      className="px-4 py-2 border border-slate-300 rounded-xl hover:bg-slate-50 active:scale-[0.98] transition"
+                    >
+                      Hủy
+                    </button>
+                  </div>
+                  
+                  <div className="text-xs text-slate-500 text-center">
+                    Nhập từ vựng tiếng Anh để xem định nghĩa và nghĩa tiếng Việt
+                  </div>
+                  
+                  <div className="border-t border-slate-200 pt-3">
+                    <div className="text-xs text-slate-500 mb-2">Gợi ý từ phổ biến:</div>
+                    <div className="flex flex-wrap gap-2">
+                      {['happy', 'work', 'family', 'success', 'challenge', 'improve', 'understand', 'achieve'].map(suggestedWord => (
+                        <button
+                          key={suggestedWord}
+                          type="button"
+                          onClick={() => {
+                            setSearchInput(suggestedWord);
+                            handleSearch();
+                          }}
+                          className="px-3 py-1 text-xs border border-slate-200 rounded-lg hover:bg-slate-50 active:scale-[0.98] transition"
+                        >
+                          {suggestedWord}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </form>
             </div>
           </div>
         )}
