@@ -9,6 +9,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
  * - Quẹt trái: lưu vào "Đã xem" + lấy từ mới (không trùng)
  * - Drawer danh sách đã xem: allow remove
  * - Chip các loại từ liên quan: noun/verb/adj/adv; tap mở card mới
+ * - Hiển thị các dạng động từ V2, V3, V-ing
  */
 
 // ---------------- Utilities ----------------
@@ -260,6 +261,104 @@ function usePointerSwipe(ref, { onSwipeLeft }) {
   }, [ref, onSwipeLeft]);
 }
 
+async function fetchVerbForms(verb) {
+  try {
+    // Kiểm tra irregular verbs phổ biến trước
+    const irregularVerbs = {
+      'be': {past: 'was/were', participle: 'been', ing: 'being'},
+      'have': {past: 'had', participle: 'had', ing: 'having'},
+      'do': {past: 'did', participle: 'done', ing: 'doing'},
+      'go': {past: 'went', participle: 'gone', ing: 'going'},
+      'get': {past: 'got', participle: 'gotten/got', ing: 'getting'},
+      'make': {past: 'made', participle: 'made', ing: 'making'},
+      'take': {past: 'took', participle: 'taken', ing: 'taking'},
+      'come': {past: 'came', participle: 'come', ing: 'coming'},
+      'see': {past: 'saw', participle: 'seen', ing: 'seeing'},
+      'know': {past: 'knew', participle: 'known', ing: 'knowing'},
+      'think': {past: 'thought', participle: 'thought', ing: 'thinking'},
+      'give': {past: 'gave', participle: 'given', ing: 'giving'},
+      'find': {past: 'found', participle: 'found', ing: 'finding'},
+      'tell': {past: 'told', participle: 'told', ing: 'telling'},
+      'become': {past: 'became', participle: 'become', ing: 'becoming'},
+      'leave': {past: 'left', participle: 'left', ing: 'leaving'},
+      'feel': {past: 'felt', participle: 'felt', ing: 'feeling'},
+      'bring': {past: 'brought', participle: 'brought', ing: 'bringing'},
+      'begin': {past: 'began', participle: 'begun', ing: 'beginning'},
+      'keep': {past: 'kept', participle: 'kept', ing: 'keeping'},
+      'hold': {past: 'held', participle: 'held', ing: 'holding'},
+      'write': {past: 'wrote', participle: 'written', ing: 'writing'},
+      'stand': {past: 'stood', participle: 'stood', ing: 'standing'},
+      'hear': {past: 'heard', participle: 'heard', ing: 'hearing'},
+      'let': {past: 'let', participle: 'let', ing: 'letting'},
+      'mean': {past: 'meant', participle: 'meant', ing: 'meaning'},
+      'set': {past: 'set', participle: 'set', ing: 'setting'},
+      'meet': {past: 'met', participle: 'met', ing: 'meeting'},
+      'run': {past: 'ran', participle: 'run', ing: 'running'},
+      'pay': {past: 'paid', participle: 'paid', ing: 'paying'},
+      'sit': {past: 'sat', participle: 'sat', ing: 'sitting'},
+      'speak': {past: 'spoke', participle: 'spoken', ing: 'speaking'},
+      'lie': {past: 'lay', participle: 'lain', ing: 'lying'},
+      'lead': {past: 'led', participle: 'led', ing: 'leading'},
+      'read': {past: 'read', participle: 'read', ing: 'reading'},
+      'grow': {past: 'grew', participle: 'grown', ing: 'growing'},
+      'lose': {past: 'lost', participle: 'lost', ing: 'losing'},
+      'fall': {past: 'fell', participle: 'fallen', ing: 'falling'},
+      'send': {past: 'sent', participle: 'sent', ing: 'sending'},
+      'build': {past: 'built', participle: 'built', ing: 'building'},
+      'understand': {past: 'understood', participle: 'understood', ing: 'understanding'},
+      'draw': {past: 'drew', participle: 'drawn', ing: 'drawing'},
+      'break': {past: 'broke', participle: 'broken', ing: 'breaking'},
+      'spend': {past: 'spent', participle: 'spent', ing: 'spending'},
+      'cut': {past: 'cut', participle: 'cut', ing: 'cutting'},
+      'rise': {past: 'rose', participle: 'risen', ing: 'rising'},
+      'drive': {past: 'drove', participle: 'driven', ing: 'driving'},
+      'buy': {past: 'bought', participle: 'bought', ing: 'buying'},
+      'wear': {past: 'wore', participle: 'worn', ing: 'wearing'},
+      'choose': {past: 'chose', participle: 'chosen', ing: 'choosing'},
+    };
+    
+    if (irregularVerbs[verb]) {
+      return irregularVerbs[verb];
+    }
+    
+    // Tạo regular forms
+    let past, participle, ing;
+    
+    // Past và Past Participle (regular)
+    if (verb.endsWith('e')) {
+      past = verb + 'd';
+      participle = verb + 'd';
+    } else if (verb.endsWith('y') && !/[aeiou]y$/.test(verb)) {
+      const stem = verb.slice(0, -1);
+      past = stem + 'ied';
+      participle = stem + 'ied';
+    } else if (/[^aeiou][aeiou][^aeiou]$/.test(verb) && verb.length > 2) {
+      // CVC pattern - double consonant
+      past = verb + verb.slice(-1) + 'ed';
+      participle = verb + verb.slice(-1) + 'ed';
+    } else {
+      past = verb + 'ed';
+      participle = verb + 'ed';
+    }
+    
+    // V-ing form
+    if (verb.endsWith('e') && !verb.endsWith('ee') && !verb.endsWith('oe') && !verb.endsWith('ye')) {
+      ing = verb.slice(0, -1) + 'ing';
+    } else if (verb.endsWith('ie')) {
+      ing = verb.slice(0, -2) + 'ying';
+    } else if (/[^aeiou][aeiou][^aeiou]$/.test(verb) && verb.length > 2 && !verb.endsWith('w') && !verb.endsWith('x') && !verb.endsWith('y')) {
+      ing = verb + verb.slice(-1) + 'ing';
+    } else {
+      ing = verb + 'ing';
+    }
+    
+    return { past, participle, ing };
+  } catch (error) {
+    console.error("Error fetching verb forms:", error);
+    return null;
+  }
+}
+
 // ---------------- App ----------------
 export default function App() {
   const [seen, setSeen] = useState(() => loadSeen());
@@ -273,6 +372,7 @@ export default function App() {
   const [showingDefinitionVI, setShowingDefinitionVI] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [searchInput, setSearchInput] = useState("");
+  const [verbForms, setVerbForms] = useState(null); // {past, participle, ing}
   const cardRef = useRef(null);
   const searchInputRef = useRef(null);
 
@@ -323,6 +423,7 @@ export default function App() {
     // Reset definition states when loading new word
     setDefinitionVI([]);
     setShowingDefinitionVI(false);
+    setVerbForms(null);
     try {
       for (let i = 0; i < 8; i++) {
         const candidate = await fetchDatamuseCandidate(seen);
@@ -398,6 +499,16 @@ export default function App() {
     // Reset definition state
     setDefinitionVI([]);
     setShowingDefinitionVI(false);
+    
+    // Kiểm tra nếu từ là động từ thì lấy các dạng động từ
+    const isVerb = Array.from(allPOS).some(pos => pos.toLowerCase() === 'verb' || pos.toLowerCase() === 'v');
+    let verbFormsData = null;
+    if (isVerb) {
+      verbFormsData = await fetchVerbForms(candidate);
+      setVerbForms(verbFormsData);
+    } else {
+      setVerbForms(null);
+    }
     
     setWord({ 
       text: candidate, 
@@ -611,6 +722,7 @@ export default function App() {
     // Reset definition states
     setDefinitionVI([]);
     setShowingDefinitionVI(false);
+    setVerbForms(null);
     try {
       const dict = await fetchDictionary(term);
       if (!dict) throw new Error("Không tìm thấy từ: " + term);
@@ -674,6 +786,7 @@ export default function App() {
     
     setShowSearch(false);
     setSearchInput("");
+    setVerbForms(null);
     await loadSpecificWord(term);
   }
 
@@ -787,6 +900,64 @@ export default function App() {
                     </div>
                   </div>
                 </div>
+
+                {verbForms && (
+                  <div className="mt-3 p-3 rounded-xl bg-blue-50 border border-blue-200">
+                    <div className="text-xs uppercase tracking-wide text-blue-700 mb-2">Các dạng động từ</div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                      <div>
+                        <div className="text-xs text-blue-600 font-medium mb-1">Quá khứ đơn (V2)</div>
+                        <div className="flex flex-wrap gap-2">
+                          <span className="px-2 py-1 bg-white rounded-lg border border-blue-200 text-sm font-medium">
+                            {verbForms.past || '—'}
+                          </span>
+                          <SmallButton 
+                            onClick={() => speak(verbForms.past, "en-US")}
+                            className="border-blue-200"
+                            title="Phát âm"
+                          >
+                            🔊
+                          </SmallButton>
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-blue-600 font-medium mb-1">Quá khứ phân từ (V3)</div>
+                        <div className="flex flex-wrap gap-2">
+                          <span className="px-2 py-1 bg-white rounded-lg border border-blue-200 text-sm font-medium">
+                            {verbForms.participle || '—'}
+                          </span>
+                          <SmallButton 
+                            onClick={() => speak(verbForms.participle?.split('/')[0], "en-US")}
+                            className="border-blue-200"
+                            title="Phát âm"
+                          >
+                            🔊
+                          </SmallButton>
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-blue-600 font-medium mb-1">Hiện tại phân từ (V-ing)</div>
+                        <div className="flex flex-wrap gap-2">
+                          <span className="px-2 py-1 bg-white rounded-lg border border-blue-200 text-sm font-medium">
+                            {verbForms.ing || '—'}
+                          </span>
+                          <SmallButton 
+                            onClick={() => speak(verbForms.ing, "en-US")}
+                            className="border-blue-200"
+                            title="Phát âm"
+                          >
+                            🔊
+                          </SmallButton>
+                        </div>
+                      </div>
+                    </div>
+                    {word?.text && ['be', 'have', 'do', 'go', 'get', 'make', 'take', 'come', 'see', 'know', 'think', 'give', 'find', 'tell', 'become', 'leave', 'feel', 'bring', 'begin', 'keep', 'hold', 'write', 'stand', 'hear', 'let', 'mean', 'set', 'meet', 'run', 'pay', 'sit', 'speak', 'lie', 'lead', 'read', 'grow', 'lose', 'fall', 'send', 'build', 'understand', 'draw', 'break', 'spend', 'cut', 'rise', 'drive', 'buy', 'wear', 'choose'].includes(word.text) && (
+                      <div className="mt-2 text-xs text-blue-600 font-medium">
+                        ⚠️ Đây là động từ bất quy tắc (irregular verb)
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 <div className="mt-2">
                   <button 
