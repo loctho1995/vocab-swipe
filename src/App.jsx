@@ -263,6 +263,37 @@ function usePointerSwipe(ref, { onSwipeLeft }) {
 
 async function fetchVerbForms(verb) {
   try {
+    // Kiểm tra nếu từ đã ở dạng -ing, -ed, hoặc irregular forms
+    // Nếu từ kết thúc bằng -ing, có thể đã là dạng V-ing
+    if (verb.endsWith('ing')) {
+      // Cố gắng tìm động từ gốc
+      let base = verb.slice(0, -3); // Bỏ 'ing'
+      
+      // Kiểm tra các trường hợp có thể
+      // Ví dụ: running -> run, making -> make
+      if (verb.endsWith('nning') || verb.endsWith('tting') || verb.endsWith('pping')) {
+        base = verb.slice(0, -4); // Bỏ double consonant + ing
+      } else if (verb.endsWith('ying') && verb.length > 5) {
+        base = verb.slice(0, -4) + 'ie'; // lying -> lie
+      } else if (!verb.endsWith('eing') && !verb.endsWith('oing') && !verb.endsWith('uing')) {
+        // Có thể từ gốc kết thúc bằng 'e' bị bỏ
+        // trying to recover: surrounding -> surround
+        const possibleBase = verb.slice(0, -3);
+        const possibleBaseWithE = verb.slice(0, -3) + 'e';
+        
+        // Kiểm tra xem base word nào hợp lý hơn
+        // Ở đây ta sẽ return null để không chia động từ cho từ đã được chia
+        console.log(`"${verb}" có vẻ đã là dạng V-ing, bỏ qua chia động từ`);
+        return null;
+      }
+    }
+    
+    // Kiểm tra nếu từ đã ở dạng -ed
+    if (verb.endsWith('ed')) {
+      console.log(`"${verb}" có vẻ đã là dạng V2/V3, bỏ qua chia động từ`);
+      return null;
+    }
+    
     // Kiểm tra irregular verbs phổ biến trước
     const irregularVerbs = {
       'be': {past: 'was/were', participle: 'been', ing: 'being'},
@@ -315,6 +346,18 @@ async function fetchVerbForms(verb) {
       'buy': {past: 'bought', participle: 'bought', ing: 'buying'},
       'wear': {past: 'wore', participle: 'worn', ing: 'wearing'},
       'choose': {past: 'chose', participle: 'chosen', ing: 'choosing'},
+      // Thêm một số động từ phổ biến khác
+      'teach': {past: 'taught', participle: 'taught', ing: 'teaching'},
+      'catch': {past: 'caught', participle: 'caught', ing: 'catching'},
+      'fight': {past: 'fought', participle: 'fought', ing: 'fighting'},
+      'forget': {past: 'forgot', participle: 'forgotten', ing: 'forgetting'},
+      'hide': {past: 'hid', participle: 'hidden', ing: 'hiding'},
+      'ring': {past: 'rang', participle: 'rung', ing: 'ringing'},
+      'sing': {past: 'sang', participle: 'sung', ing: 'singing'},
+      'swim': {past: 'swam', participle: 'swum', ing: 'swimming'},
+      'throw': {past: 'threw', participle: 'thrown', ing: 'throwing'},
+      'wake': {past: 'woke', participle: 'woken', ing: 'waking'},
+      'win': {past: 'won', participle: 'won', ing: 'winning'},
     };
     
     if (irregularVerbs[verb]) {
@@ -332,10 +375,17 @@ async function fetchVerbForms(verb) {
       const stem = verb.slice(0, -1);
       past = stem + 'ied';
       participle = stem + 'ied';
-    } else if (/[^aeiou][aeiou][^aeiou]$/.test(verb) && verb.length > 2) {
-      // CVC pattern - double consonant
-      past = verb + verb.slice(-1) + 'ed';
-      participle = verb + verb.slice(-1) + 'ed';
+    } else if (/[^aeiou][aeiou][^aeiouw][^aeiouwy]?$/.test(verb) && verb.length > 2 && verb.length <= 6) {
+      // CVC pattern cải tiến - chỉ double consonant cho từ ngắn (2-6 ký tự)
+      // và không áp dụng cho từ kết thúc bằng w, y, hoặc có 2 consonants liên tiếp
+      const lastChar = verb.slice(-1);
+      if (!['w', 'y', 'x'].includes(lastChar) && !/[^aeiou]{2}$/.test(verb)) {
+        past = verb + lastChar + 'ed';
+        participle = verb + lastChar + 'ed';
+      } else {
+        past = verb + 'ed';
+        participle = verb + 'ed';
+      }
     } else {
       past = verb + 'ed';
       participle = verb + 'ed';
@@ -346,8 +396,14 @@ async function fetchVerbForms(verb) {
       ing = verb.slice(0, -1) + 'ing';
     } else if (verb.endsWith('ie')) {
       ing = verb.slice(0, -2) + 'ying';
-    } else if (/[^aeiou][aeiou][^aeiou]$/.test(verb) && verb.length > 2 && !verb.endsWith('w') && !verb.endsWith('x') && !verb.endsWith('y')) {
-      ing = verb + verb.slice(-1) + 'ing';
+    } else if (/[^aeiou][aeiou][^aeiouw]$/.test(verb) && verb.length > 2 && verb.length <= 6) {
+      // CVC pattern cải tiến cho -ing form
+      const lastChar = verb.slice(-1);
+      if (!['w', 'y', 'x'].includes(lastChar) && !/[^aeiou]{2}$/.test(verb)) {
+        ing = verb + lastChar + 'ing';
+      } else {
+        ing = verb + 'ing';
+      }
     } else {
       ing = verb + 'ing';
     }
@@ -358,7 +414,6 @@ async function fetchVerbForms(verb) {
     return null;
   }
 }
-
 // ---------------- App ----------------
 export default function App() {
   const [seen, setSeen] = useState(() => loadSeen());
