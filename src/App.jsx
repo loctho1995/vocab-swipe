@@ -809,7 +809,7 @@ export default function App() {
   function openChatGPTExamples() {
     if (!word?.text) return;
     
-    const prompt = `cho tôi các ví dụ và các đoạn hội thoại phổ biến với từ ${word.text}`;
+    const prompt = `cho tôi các dạng động từ nếu có, ví dụ và các đoạn hội thoại phổ biến với từ ${word.text}`;
     const encodedPrompt = encodeURIComponent(prompt);
     const chatGPTUrl = `https://chatgpt.com/?q=${encodedPrompt}`;
     
@@ -955,64 +955,6 @@ export default function App() {
                     </div>
                   </div>
                 </div>
-
-                {verbForms && (
-                  <div className="mt-3 p-3 rounded-xl bg-blue-50 border border-blue-200">
-                    <div className="text-xs uppercase tracking-wide text-blue-700 mb-2">Các dạng động từ</div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                      <div>
-                        <div className="text-xs text-blue-600 font-medium mb-1">Quá khứ đơn (V2)</div>
-                        <div className="flex flex-wrap gap-2">
-                          <span className="px-2 py-1 bg-white rounded-lg border border-blue-200 text-sm font-medium">
-                            {verbForms.past || '—'}
-                          </span>
-                          <SmallButton 
-                            onClick={() => speak(verbForms.past, "en-US")}
-                            className="border-blue-200"
-                            title="Phát âm"
-                          >
-                            🔊
-                          </SmallButton>
-                        </div>
-                      </div>
-                      <div>
-                        <div className="text-xs text-blue-600 font-medium mb-1">Quá khứ phân từ (V3)</div>
-                        <div className="flex flex-wrap gap-2">
-                          <span className="px-2 py-1 bg-white rounded-lg border border-blue-200 text-sm font-medium">
-                            {verbForms.participle || '—'}
-                          </span>
-                          <SmallButton 
-                            onClick={() => speak(verbForms.participle?.split('/')[0], "en-US")}
-                            className="border-blue-200"
-                            title="Phát âm"
-                          >
-                            🔊
-                          </SmallButton>
-                        </div>
-                      </div>
-                      <div>
-                        <div className="text-xs text-blue-600 font-medium mb-1">Hiện tại phân từ (V-ing)</div>
-                        <div className="flex flex-wrap gap-2">
-                          <span className="px-2 py-1 bg-white rounded-lg border border-blue-200 text-sm font-medium">
-                            {verbForms.ing || '—'}
-                          </span>
-                          <SmallButton 
-                            onClick={() => speak(verbForms.ing, "en-US")}
-                            className="border-blue-200"
-                            title="Phát âm"
-                          >
-                            🔊
-                          </SmallButton>
-                        </div>
-                      </div>
-                    </div>
-                    {word?.text && ['be', 'have', 'do', 'go', 'get', 'make', 'take', 'come', 'see', 'know', 'think', 'give', 'find', 'tell', 'become', 'leave', 'feel', 'bring', 'begin', 'keep', 'hold', 'write', 'stand', 'hear', 'let', 'mean', 'set', 'meet', 'run', 'pay', 'sit', 'speak', 'lie', 'lead', 'read', 'grow', 'lose', 'fall', 'send', 'build', 'understand', 'draw', 'break', 'spend', 'cut', 'rise', 'drive', 'buy', 'wear', 'choose'].includes(word.text) && (
-                      <div className="mt-2 text-xs text-blue-600 font-medium">
-                        ⚠️ Đây là động từ bất quy tắc (irregular verb)
-                      </div>
-                    )}
-                  </div>
-                )}
 
                 <div className="mt-2">
                   <button 
