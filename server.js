@@ -1,6 +1,7 @@
 /**
  * Vocab Swipe Server
  * Node.js/Express server để serve files và auto-load sources từ folder
+ * Hỗ trợ file .data với dòng đầu tiên là #link: <url>
  */
 
 const express = require('express');
@@ -16,33 +17,75 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static('.')); // Serve static files
 
+/**
+ * Parse nội dung file .data
+ * Dòng đầu tiên có thể là: #link: <url>
+ * Các dòng còn lại là JSON array của words
+ */
+function parseDataFile(content) {
+    const lines = content.split('\n');
+    let link = '';
+    let jsonContent = content;
+    
+    // Kiểm tra dòng đầu tiên có phải #link: không
+    if (lines[0].trim().startsWith('#link:')) {
+        link = lines[0].trim().substring(6).trim(); // Lấy phần sau "#link:"
+        jsonContent = lines.slice(1).join('\n'); // Phần còn lại là JSON
+    }
+    
+    const words = JSON.parse(jsonContent);
+    
+    return {
+        link: link,
+        words: words
+    };
+}
+
+/**
+ * Tạo nội dung file .data từ link và words
+ */
+function createDataFileContent(link, words) {
+    let content = '';
+    
+    // Thêm dòng #link: nếu có link
+    if (link && link.trim()) {
+        content = `#link: ${link.trim()}\n`;
+    }
+    
+    // Thêm JSON array của words
+    content += JSON.stringify(words, null, 2);
+    
+    return content;
+}
+
 // API: Lấy danh sách tất cả sources từ folder
 app.get('/api/sources', async (req, res) => {
     try {
         const sourcesDir = path.join(__dirname, 'sources');
         const files = await fs.readdir(sourcesDir);
         
-        // Chỉ lấy files .json
-        const jsonFiles = files.filter(file => file.endsWith('.json'));
+        // Chỉ lấy files .data
+        const dataFiles = files.filter(file => file.endsWith('.data'));
         
         const sources = [];
         
-        for (const file of jsonFiles) {
+        for (const file of dataFiles) {
             try {
                 const filePath = path.join(sourcesDir, file);
                 const content = await fs.readFile(filePath, 'utf-8');
-                const words = JSON.parse(content);
+                const parsed = parseDataFile(content);
                 
                 // Tạo tên source từ tên file
-                const sourceName = file.replace('.json', '')
+                const sourceName = file.replace('.data', '')
                     .replace(/-/g, ' ')
                     .replace(/\b\w/g, l => l.toUpperCase());
                 
                 sources.push({
                     name: sourceName,
                     fileName: file,
-                    words: words,
-                    totalWords: words.length,
+                    link: parsed.link,
+                    words: parsed.words,
+                    totalWords: parsed.words.length,
                     createdAt: Date.now()
                 });
             } catch (err) {
@@ -73,13 +116,14 @@ app.get('/api/sources/:fileName', async (req, res) => {
         const filePath = path.join(__dirname, 'sources', fileName);
         
         const content = await fs.readFile(filePath, 'utf-8');
-        const words = JSON.parse(content);
+        const parsed = parseDataFile(content);
         
         res.json({
             success: true,
             fileName: fileName,
-            words: words,
-            totalWords: words.length
+            link: parsed.link,
+            words: parsed.words,
+            totalWords: parsed.words.length
         });
         
     } catch (error) {
@@ -95,7 +139,7 @@ app.get('/api/sources/:fileName', async (req, res) => {
 // API: Lưu source mới vào folder
 app.post('/api/sources', async (req, res) => {
     try {
-        const { name, words } = req.body;
+        const { name, link, words } = req.body;
         
         if (!name || !words || !Array.isArray(words)) {
             return res.status(400).json({
@@ -108,17 +152,21 @@ app.post('/api/sources', async (req, res) => {
         // Tạo tên file từ name
         const fileName = name.toLowerCase()
             .replace(/\s+/g, '-')
-            .replace(/[^a-z0-9-]/g, '') + '.json';
+            .replace(/[^a-z0-9-]/g, '') + '.data';
         
         const filePath = path.join(__dirname, 'sources', fileName);
         
+        // Tạo nội dung file với link (optional)
+        const fileContent = createDataFileContent(link || '', words);
+        
         // Ghi file
-        await fs.writeFile(filePath, JSON.stringify(words, null, 2), 'utf-8');
+        await fs.writeFile(filePath, fileContent, 'utf-8');
         
         res.json({
             success: true,
             message: 'Source saved successfully',
             fileName: fileName,
+            link: link || '',
             totalWords: words.length
         });
         
@@ -127,6 +175,46 @@ app.post('/api/sources', async (req, res) => {
         res.status(500).json({
             success: false,
             error: 'Failed to save source',
+            message: error.message
+        });
+    }
+});
+
+// API: Cập nhật source (bao gồm cả link)
+app.put('/api/sources/:fileName', async (req, res) => {
+    try {
+        const fileName = req.params.fileName;
+        const { link, words } = req.body;
+        
+        if (!words || !Array.isArray(words)) {
+            return res.status(400).json({
+                success: false,
+                error: 'Invalid data',
+                message: 'Words array is required'
+            });
+        }
+        
+        const filePath = path.join(__dirname, 'sources', fileName);
+        
+        // Tạo nội dung file với link (optional)
+        const fileContent = createDataFileContent(link || '', words);
+        
+        // Ghi file
+        await fs.writeFile(filePath, fileContent, 'utf-8');
+        
+        res.json({
+            success: true,
+            message: 'Source updated successfully',
+            fileName: fileName,
+            link: link || '',
+            totalWords: words.length
+        });
+        
+    } catch (error) {
+        console.error('Error updating source:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to update source',
             message: error.message
         });
     }
@@ -179,10 +267,14 @@ app.listen(PORT, () => {
 ║   URL:  http://localhost:${PORT}      
 ║                                       ║
 ║   API Endpoints:                      ║
-║   GET  /api/sources                   ║
-║   GET  /api/sources/:fileName         ║
-║   POST /api/sources                   ║
+║   GET    /api/sources                 ║
+║   GET    /api/sources/:fileName       ║
+║   POST   /api/sources                 ║
+║   PUT    /api/sources/:fileName       ║
 ║   DELETE /api/sources/:fileName       ║
+║                                       ║
+║   📝 File format: .data               ║
+║   First line: #link: <url> (optional) ║
 ╚═══════════════════════════════════════╝
     `);
 });

@@ -536,6 +536,13 @@ body {
     font-size: 0.85rem;
 }
 
+.form-group label .optional {
+    font-weight: 400;
+    color: #666;
+    font-size: 0.75rem;
+    font-style: italic;
+}
+
 .input-text {
     width: 100%;
     padding: 10px;
@@ -626,6 +633,25 @@ body {
 .source-info {
     font-size: 0.75rem;
     color: #666;
+}
+
+.source-link {
+    display: block;
+    color: #667eea;
+    text-decoration: none;
+    font-size: 0.7rem;
+    margin-top: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.source-link:hover {
+    text-decoration: underline;
+}
+
+.source-link::before {
+    content: "🔗 ";
 }
 
 .source-actions {

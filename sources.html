@@ -176,6 +176,20 @@
                         <div class="edit-source-stats">
                             <span id="editSourceCount">0 từ</span>
                         </div>
+                        <div class="form-group" style="margin-top: 8px;">
+                            <label for="editSourceLinkInput">
+                                Link nguồn <span class="optional">(không bắt buộc)</span>
+                            </label>
+                            <input 
+                                type="url" 
+                                id="editSourceLinkInput" 
+                                class="input-text" 
+                                placeholder="https://..."
+                            >
+                            <button id="updateSourceLinkBtn" class="btn-secondary full-width" style="margin-top: 4px;">
+                                💾 Cập nhật link
+                            </button>
+                        </div>
                     </div>
                     
                     <!-- Tabs -->
@@ -255,6 +269,19 @@ hoặc nhiều từ: [{"word": "word1", ...}, {"word": "word2", ...}]'
                             id="sourceNameInput" 
                             class="input-text" 
                             placeholder="Ví dụ: TOEIC Basic, IELTS Advanced..."
+                        >
+                    </div>
+                    
+                    <!-- Source Link (optional) -->
+                    <div class="form-group">
+                        <label for="sourceLinkInput">
+                            Link nguồn <span class="optional">(không bắt buộc)</span>
+                        </label>
+                        <input 
+                            type="url" 
+                            id="sourceLinkInput" 
+                            class="input-text" 
+                            placeholder="https://... (nếu có)"
                         >
                     </div>
                     
