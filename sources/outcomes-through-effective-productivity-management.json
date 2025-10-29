@@ -54,5 +54,1028 @@
     ],
     "audioURL": "https://dictionary.cambridge.org/media/english/us_pron/w/wor/workflow.mp3",
     "notes": "Từ rất thông dụng trong môi trường công nghệ, Agile, DevOps."
+  },
+  {
+    "word": "productivity",
+    "wordType": "noun",
+    "pronounce": "/ˌprɒd.ʌkˈtɪv.ə.ti/",
+    "meaning": "the rate at which work is completed or goods are produced",
+    "translateVN": "năng suất, hiệu quả làm việc",
+    "synonyms": [
+      "efficiency",
+      "output",
+      "performance"
+    ],
+    "antonyms": [
+      "inefficiency",
+      "idleness"
+    ],
+    "forms": [],
+    "notes": "Thường dùng trong kinh tế và IT để chỉ mức hiệu quả làm việc."
+  },
+  {
+    "word": "management",
+    "wordType": "noun",
+    "pronounce": "/ˈmæn.ɪdʒ.mənt/",
+    "meaning": "the process of organizing, planning, and controlling activities to achieve goals",
+    "translateVN": "sự quản lý, điều hành",
+    "synonyms": [
+      "administration",
+      "supervision",
+      "leadership"
+    ],
+    "antonyms": [
+      "disorganization",
+      "mismanagement"
+    ],
+    "forms": [],
+    "notes": "Một trong những khái niệm cơ bản trong quản trị doanh nghiệp."
+  },
+  {
+    "word": "efficiency",
+    "wordType": "noun",
+    "pronounce": "/ɪˈfɪʃ.ən.si/",
+    "meaning": "the ability to achieve results without wasting time or effort",
+    "translateVN": "hiệu suất, năng lực làm việc hiệu quả",
+    "synonyms": [
+      "effectiveness",
+      "productivity",
+      "competence"
+    ],
+    "antonyms": [
+      "inefficiency",
+      "wastefulness"
+    ],
+    "forms": [],
+    "notes": "Từ phổ biến trong kỹ thuật, kinh tế, và phần mềm."
+  },
+  {
+    "word": "workflow",
+    "wordType": "noun",
+    "pronounce": "/ˈwɜːk.fləʊ/",
+    "meaning": "a sequence of tasks or processes required to complete a project",
+    "translateVN": "quy trình làm việc",
+    "synonyms": [
+      "process",
+      "procedure",
+      "sequence"
+    ],
+    "antonyms": [
+      "disorder",
+      "confusion"
+    ],
+    "forms": [
+      "workflows"
+    ],
+    "notes": "Dùng nhiều trong quản lý dự án và phát triển phần mềm."
+  },
+  {
+    "word": "coordination",
+    "wordType": "noun",
+    "pronounce": "/kəʊˌɔː.dɪˈneɪ.ʃən/",
+    "meaning": "the organization of people or things to work together effectively",
+    "translateVN": "sự phối hợp, điều phối",
+    "synonyms": [
+      "collaboration",
+      "organization",
+      "harmony"
+    ],
+    "antonyms": [
+      "disorder",
+      "chaos"
+    ],
+    "forms": [],
+    "notes": "Thường nói về việc các nhóm hoặc bộ phận làm việc cùng nhau."
+  },
+  {
+    "word": "execution",
+    "wordType": "noun",
+    "pronounce": "/ˌek.sɪˈkjuː.ʃən/",
+    "meaning": "the act of carrying out a plan, order, or course of action",
+    "translateVN": "sự thực thi, triển khai kế hoạch",
+    "synonyms": [
+      "implementation",
+      "performance",
+      "completion"
+    ],
+    "antonyms": [
+      "failure",
+      "abandonment"
+    ],
+    "forms": [],
+    "notes": "Trong kinh doanh, nghĩa là thực hiện kế hoạch hoặc chiến lược."
+  },
+  {
+    "word": "measurable",
+    "wordType": "adjective",
+    "pronounce": "/ˈmeʒ.ər.ə.bəl/",
+    "meaning": "able to be measured or quantified",
+    "translateVN": "có thể đo lường được",
+    "synonyms": [
+      "quantifiable",
+      "assessable"
+    ],
+    "antonyms": [
+      "immeasurable",
+      "indefinable"
+    ],
+    "forms": [
+      "measurably"
+    ],
+    "notes": "Thường dùng trong KPI, kết quả dự án, hiệu suất làm việc."
+  },
+  {
+    "word": "visibility",
+    "wordType": "noun",
+    "pronounce": "/ˌvɪz.əˈbɪl.ə.ti/",
+    "meaning": "the state of being able to be seen or easily tracked",
+    "translateVN": "tính minh bạch, khả năng quan sát",
+    "synonyms": [
+      "clarity",
+      "transparency"
+    ],
+    "antonyms": [
+      "obscurity",
+      "uncertainty"
+    ],
+    "forms": [],
+    "notes": "Dùng trong ngữ cảnh doanh nghiệp, chỉ độ minh bạch trong quản lý."
+  },
+  {
+    "word": "transparency",
+    "wordType": "noun",
+    "pronounce": "/trænˈspær.ən.si/",
+    "meaning": "the quality of being open and honest; easy to understand",
+    "translateVN": "sự minh bạch, rõ ràng",
+    "synonyms": [
+      "clarity",
+      "openness",
+      "honesty"
+    ],
+    "antonyms": [
+      "secrecy",
+      "deception"
+    ],
+    "forms": [],
+    "notes": "Rất phổ biến trong quản trị công ty và làm việc nhóm."
+  },
+  {
+    "word": "accountability",
+    "wordType": "noun",
+    "pronounce": "/əˌkaʊn.təˈbɪl.ə.ti/",
+    "meaning": "the state of being responsible for one’s actions and decisions",
+    "translateVN": "trách nhiệm giải trình, tinh thần chịu trách nhiệm",
+    "synonyms": [
+      "responsibility",
+      "answerability"
+    ],
+    "antonyms": [
+      "irresponsibility"
+    ],
+    "forms": [],
+    "notes": "Một khái niệm quan trọng trong văn hóa doanh nghiệp hiện đại."
+  },
+  {
+    "word": "deliverable",
+    "wordType": "noun",
+    "pronounce": "/dɪˈlɪv.ər.ə.bəl/",
+    "meaning": "a specific result or product that must be delivered as part of a project",
+    "translateVN": "sản phẩm hoặc kết quả cần bàn giao",
+    "synonyms": [
+      "output",
+      "result",
+      "milestone"
+    ],
+    "antonyms": [
+      "non-result"
+    ],
+    "forms": [
+      "deliverables"
+    ],
+    "notes": "Thường dùng trong quản lý dự án để chỉ đầu ra cụ thể phải hoàn thành."
+  },
+  {
+    "word": "timeline",
+    "wordType": "noun",
+    "pronounce": "/ˈtaɪm.laɪn/",
+    "meaning": "a schedule showing the order and time of project activities",
+    "translateVN": "mốc thời gian, tiến độ dự án",
+    "synonyms": [
+      "schedule",
+      "plan",
+      "itinerary"
+    ],
+    "antonyms": [
+      "disorder"
+    ],
+    "forms": [
+      "timelines"
+    ],
+    "notes": "Dùng để mô tả trình tự hoặc khung thời gian của dự án."
+  },
+  {
+    "word": "implementation",
+    "wordType": "noun",
+    "pronounce": "/ˌɪm.plɪ.menˈteɪ.ʃən/",
+    "meaning": "the act of putting a plan or system into operation",
+    "translateVN": "sự triển khai, thực hiện",
+    "synonyms": [
+      "execution",
+      "application",
+      "realization"
+    ],
+    "antonyms": [
+      "neglect"
+    ],
+    "forms": [],
+    "notes": "Thường xuất hiện trong IT khi nói về triển khai phần mềm hoặc kế hoạch."
+  },
+  {
+    "word": "utilization",
+    "wordType": "noun",
+    "pronounce": "/ˌjuː.tɪ.laɪˈzeɪ.ʃən/",
+    "meaning": "the act of using something effectively",
+    "translateVN": "sự sử dụng hiệu quả",
+    "synonyms": [
+      "use",
+      "application",
+      "exploitation"
+    ],
+    "antonyms": [
+      "waste",
+      "misuse"
+    ],
+    "forms": [],
+    "notes": "Từ chuyên ngành chỉ mức độ khai thác tài nguyên hoặc thời gian làm việc."
+  },
+  {
+    "word": "allocation",
+    "wordType": "noun",
+    "pronounce": "/ˌæl.əˈkeɪ.ʃən/",
+    "meaning": "the process of assigning or distributing resources or tasks",
+    "translateVN": "sự phân bổ, bố trí",
+    "synonyms": [
+      "assignment",
+      "distribution",
+      "designation"
+    ],
+    "antonyms": [
+      "withdrawal"
+    ],
+    "forms": [],
+    "notes": "Thường đi kèm resource — resource allocation (phân bổ nguồn lực)."
+  },
+  {
+    "word": "bottleneck",
+    "wordType": "noun",
+    "pronounce": "/ˈbɒt.əl.nek/",
+    "meaning": "a point that delays progress in a process",
+    "translateVN": "nút thắt cổ chai, điểm tắc nghẽn",
+    "synonyms": [
+      "obstacle",
+      "hindrance",
+      "delay"
+    ],
+    "antonyms": [
+      "flow",
+      "progress"
+    ],
+    "forms": [
+      "bottlenecks"
+    ],
+    "notes": "Thường dùng khi nói đến quy trình chậm do khâu yếu hoặc thiếu tài nguyên."
+  },
+  {
+    "word": "optimization",
+    "wordType": "noun",
+    "pronounce": "/ˌɒp.tɪ.maɪˈzeɪ.ʃən/",
+    "meaning": "the process of making something as effective as possible",
+    "translateVN": "tối ưu hóa",
+    "synonyms": [
+      "enhancement",
+      "improvement",
+      "streamlining"
+    ],
+    "antonyms": [
+      "degradation"
+    ],
+    "forms": [],
+    "notes": "Khái niệm cốt lõi trong lập trình và quản trị quy trình."
+  },
+  {
+    "word": "streamline",
+    "wordType": "verb",
+    "pronounce": "/ˈstriːm.laɪn/",
+    "meaning": "to make an organization or process more efficient",
+    "translateVN": "tinh giản, tối ưu hóa quy trình",
+    "synonyms": [
+      "simplify",
+      "rationalize",
+      "improve"
+    ],
+    "antonyms": [
+      "complicate"
+    ],
+    "forms": [
+      "streamlined",
+      "streamlines"
+    ],
+    "notes": "Thường dùng khi muốn làm cho công việc gọn gàng, nhanh hơn."
+  },
+  {
+    "word": "automation",
+    "wordType": "noun",
+    "pronounce": "/ˌɔː.təˈmeɪ.ʃən/",
+    "meaning": "use of machines and software to perform tasks automatically",
+    "translateVN": "tự động hóa",
+    "synonyms": [
+      "mechanization",
+      "robotization"
+    ],
+    "antonyms": [
+      "manual operation"
+    ],
+    "forms": [],
+    "notes": "Khái niệm quan trọng trong chuyển đổi số và IT hiện đại."
+  },
+  {
+    "word": "analytics",
+    "wordType": "noun",
+    "pronounce": "/ˌæn.əˈlɪt.ɪks/",
+    "meaning": "systematic analysis of data or statistics",
+    "translateVN": "phân tích dữ liệu",
+    "synonyms": [
+      "data analysis",
+      "statistics",
+      "insights"
+    ],
+    "antonyms": [
+      "guesswork"
+    ],
+    "forms": [],
+    "notes": "Thường dùng trong cụm data analytics hoặc business analytics."
+  },
+  {
+    "word": "collaboration",
+    "wordType": "noun",
+    "pronounce": "/kəˌlæb.əˈreɪ.ʃən/",
+    "meaning": "the action of working with others to achieve a common goal",
+    "translateVN": "sự hợp tác, cộng tác",
+    "synonyms": [
+      "teamwork",
+      "cooperation",
+      "partnership"
+    ],
+    "antonyms": [
+      "conflict",
+      "competition"
+    ],
+    "forms": [
+      "collaborate",
+      "collaborative"
+    ],
+    "notes": "Một kỹ năng cốt lõi trong quản lý dự án và làm việc nhóm."
+  },
+  {
+    "word": "stakeholder",
+    "wordType": "noun",
+    "pronounce": "/ˈsteɪkˌhoʊl.dɚ/",
+    "meaning": "a person or group with an interest in a project or business",
+    "translateVN": "bên liên quan, người có lợi ích",
+    "synonyms": [
+      "participant",
+      "partner",
+      "shareholder"
+    ],
+    "antonyms": [
+      "outsider"
+    ],
+    "forms": [
+      "stakeholders"
+    ],
+    "notes": "Thuật ngữ quản trị chỉ các cá nhân, nhóm ảnh hưởng đến dự án."
+  },
+  {
+    "word": "milestone",
+    "wordType": "noun",
+    "pronounce": "/ˈmaɪl.stəʊn/",
+    "meaning": "a significant event or stage in the progress of a project",
+    "translateVN": "cột mốc, bước tiến quan trọng",
+    "synonyms": [
+      "benchmark",
+      "achievement",
+      "landmark"
+    ],
+    "antonyms": [
+      "setback"
+    ],
+    "forms": [
+      "milestones"
+    ],
+    "notes": "Dùng trong quản lý dự án để chỉ giai đoạn hoàn thành quan trọng."
+  },
+  {
+    "word": "benchmark",
+    "wordType": "noun",
+    "pronounce": "/ˈbentʃ.mɑːk/",
+    "meaning": "a standard of comparison or reference point for measurement",
+    "translateVN": "chuẩn so sánh, tiêu chuẩn đối chiếu",
+    "synonyms": [
+      "standard",
+      "yardstick",
+      "criterion"
+    ],
+    "antonyms": [
+      "deviation"
+    ],
+    "forms": [
+      "benchmarks"
+    ],
+    "notes": "Thường dùng trong đánh giá hiệu suất hoặc hiệu quả dự án."
+  },
+  {
+    "word": "scalability",
+    "wordType": "noun",
+    "pronounce": "/ˌskeɪ.ləˈbɪl.ə.ti/",
+    "meaning": "the capability of a system to handle increased workload or growth",
+    "translateVN": "khả năng mở rộng",
+    "synonyms": [
+      "expandability",
+      "adaptability"
+    ],
+    "antonyms": [
+      "rigidity",
+      "limitation"
+    ],
+    "forms": [
+      "scalable"
+    ],
+    "notes": "Từ phổ biến trong IT, startup, phần mềm và hệ thống mạng."
+  },
+  {
+    "word": "integration",
+    "wordType": "noun",
+    "pronounce": "/ˌɪn.tɪˈɡreɪ.ʃən/",
+    "meaning": "the process of combining different systems or processes to work together",
+    "translateVN": "sự tích hợp, kết nối",
+    "synonyms": [
+      "combination",
+      "merging",
+      "unification"
+    ],
+    "antonyms": [
+      "separation",
+      "isolation"
+    ],
+    "forms": [
+      "integrate",
+      "integrated"
+    ],
+    "notes": "Dùng nhiều trong IT — hệ thống, phần mềm, dữ liệu tích hợp."
+  },
+  {
+    "word": "real-time",
+    "wordType": "adjective",
+    "pronounce": "/ˈrɪəl ˌtaɪm/",
+    "meaning": "happening immediately as events occur",
+    "translateVN": "thời gian thực",
+    "synonyms": [
+      "instant",
+      "live",
+      "synchronous"
+    ],
+    "antonyms": [
+      "delayed",
+      "asynchronous"
+    ],
+    "forms": [],
+    "notes": "Khái niệm kỹ thuật chỉ dữ liệu cập nhật tức thì."
+  },
+  {
+    "word": "monitoring",
+    "wordType": "noun",
+    "pronounce": "/ˈmɒn.ɪ.tər.ɪŋ/",
+    "meaning": "the act of observing and checking progress or quality over a period of time",
+    "translateVN": "giám sát, theo dõi",
+    "synonyms": [
+      "tracking",
+      "supervision",
+      "inspection"
+    ],
+    "antonyms": [
+      "neglect",
+      "ignoring"
+    ],
+    "forms": [
+      "monitor",
+      "monitored"
+    ],
+    "notes": "Dùng phổ biến trong quản lý hiệu suất và hệ thống IT."
+  },
+  {
+    "word": "accountability system",
+    "wordType": "noun phrase",
+    "pronounce": "/əˌkaʊn.təˈbɪl.ə.ti ˈsɪs.təm/",
+    "meaning": "a structure ensuring individuals are responsible for their tasks",
+    "translateVN": "hệ thống trách nhiệm giải trình",
+    "synonyms": [
+      "responsibility framework",
+      "oversight system"
+    ],
+    "antonyms": [
+      "unaccountable setup"
+    ],
+    "forms": [],
+    "notes": "Khái niệm quản trị giúp duy trì tính minh bạch trong tổ chức."
+  },
+  {
+    "word": "hybrid model",
+    "wordType": "noun phrase",
+    "pronounce": "/ˈhaɪ.brɪd ˈmɒd.əl/",
+    "meaning": "a combination of two systems, such as office and remote work",
+    "translateVN": "mô hình lai (kết hợp giữa 2 hình thức)",
+    "synonyms": [
+      "mixed model",
+      "blended approach"
+    ],
+    "antonyms": [
+      "single model"
+    ],
+    "forms": [],
+    "notes": "Thường dùng trong mô tả môi trường làm việc hoặc hệ thống IT."
+  },
+  {
+    "word": "performance analysis",
+    "wordType": "noun phrase",
+    "pronounce": "/pəˈfɔː.məns əˈnæl.ə.sɪs/",
+    "meaning": "the process of evaluating the results or efficiency of work",
+    "translateVN": "phân tích hiệu suất làm việc",
+    "synonyms": [
+      "efficiency evaluation",
+      "productivity assessment"
+    ],
+    "antonyms": [
+      "neglect"
+    ],
+    "forms": [],
+    "notes": "Thường dùng trong quản lý nhân sự và đánh giá kết quả dự án."
+  },
+  {
+    "word": "benchmarking",
+    "wordType": "noun",
+    "pronounce": "/ˈbentʃ.mɑː.kɪŋ/",
+    "meaning": "comparing performance against industry standards or best practices",
+    "translateVN": "so sánh chuẩn, đối chiếu chuẩn ngành",
+    "synonyms": [
+      "comparison",
+      "evaluation",
+      "standard testing"
+    ],
+    "antonyms": [
+      "randomization"
+    ],
+    "forms": [
+      "benchmark",
+      "benchmarked"
+    ],
+    "notes": "Thường dùng trong quản lý chất lượng hoặc quy trình cải tiến."
+  },
+  {
+    "word": "workload",
+    "wordType": "noun",
+    "pronounce": "/ˈwɜːk.ləʊd/",
+    "meaning": "the amount of work that a person or team has to do",
+    "translateVN": "khối lượng công việc",
+    "synonyms": [
+      "task volume",
+      "job demand",
+      "assignment load"
+    ],
+    "antonyms": [
+      "idle time"
+    ],
+    "forms": [
+      "workloads"
+    ],
+    "notes": "Dùng nhiều trong phân tích hiệu suất và quản lý nhân sự."
+  },
+  {
+    "word": "time tracking",
+    "wordType": "noun phrase",
+    "pronounce": "/taɪm ˈtræk.ɪŋ/",
+    "meaning": "the process of recording how working hours are spent",
+    "translateVN": "theo dõi thời gian làm việc",
+    "synonyms": [
+      "time logging",
+      "attendance tracking"
+    ],
+    "antonyms": [
+      "time neglect"
+    ],
+    "forms": [],
+    "notes": "Tính năng phổ biến trong phần mềm quản lý dự án."
+  },
+  {
+    "word": "automation tool",
+    "wordType": "noun phrase",
+    "pronounce": "/ˌɔː.təˈmeɪ.ʃən tuːl/",
+    "meaning": "software that automates repetitive tasks or processes",
+    "translateVN": "công cụ tự động hóa",
+    "synonyms": [
+      "bot",
+      "automation software",
+      "script"
+    ],
+    "antonyms": [
+      "manual tool"
+    ],
+    "forms": [],
+    "notes": "Thường dùng trong DevOps, testing và quản lý workflow."
+  },
+  {
+    "word": "resource allocation",
+    "wordType": "noun phrase",
+    "pronounce": "/rɪˈsɔːs ˌæləˈkeɪ.ʃən/",
+    "meaning": "the distribution of available resources among tasks or projects",
+    "translateVN": "phân bổ tài nguyên",
+    "synonyms": [
+      "resource planning",
+      "budgeting"
+    ],
+    "antonyms": [
+      "misallocation"
+    ],
+    "forms": [],
+    "notes": "Cụm từ cốt lõi trong quản lý dự án và vận hành doanh nghiệp."
+  },
+  {
+    "word": "deliver on time",
+    "wordType": "verb phrase",
+    "pronounce": "/dɪˈlɪv.ər ɒn taɪm/",
+    "meaning": "to complete and provide work within the agreed deadline",
+    "translateVN": "bàn giao đúng hạn",
+    "synonyms": [
+      "meet the deadline",
+      "finish punctually"
+    ],
+    "antonyms": [
+      "delay",
+      "miss the deadline"
+    ],
+    "forms": [
+      "delivers",
+      "delivered",
+      "delivering"
+    ],
+    "notes": "Cụm phổ biến trong quản lý dự án và giao hàng phần mềm."
+  },
+  {
+    "word": "remote team",
+    "wordType": "noun phrase",
+    "pronounce": "/rɪˈməʊt tiːm/",
+    "meaning": "a group of people who work together from different locations",
+    "translateVN": "nhóm làm việc từ xa",
+    "synonyms": [
+      "distributed team",
+      "virtual team"
+    ],
+    "antonyms": [
+      "on-site team"
+    ],
+    "forms": [
+      "remote teams"
+    ],
+    "notes": "Thường dùng trong mô hình hybrid và làm việc toàn cầu."
+  },
+  {
+    "word": "accountability framework",
+    "wordType": "noun phrase",
+    "pronounce": "/əˌkaʊn.təˈbɪl.ə.ti ˈfreɪm.wɜːk/",
+    "meaning": "a structure that defines roles and responsibilities for decision-making",
+    "translateVN": "khung trách nhiệm, hệ thống phân quyền rõ ràng",
+    "synonyms": [
+      "responsibility structure",
+      "oversight model"
+    ],
+    "antonyms": [
+      "unclear governance"
+    ],
+    "forms": [],
+    "notes": "Khái niệm quản trị phổ biến giúp đảm bảo minh bạch và kiểm soát."
+  },
+  {
+    "word": "task prioritization",
+    "wordType": "noun phrase",
+    "pronounce": "/tɑːsk praɪˌɒr.ɪ.taɪˈzeɪ.ʃən/",
+    "meaning": "the process of deciding which tasks should be done first",
+    "translateVN": "ưu tiên công việc",
+    "synonyms": [
+      "task ranking",
+      "work planning"
+    ],
+    "antonyms": [
+      "random execution"
+    ],
+    "forms": [],
+    "notes": "Một phần quan trọng của quản lý thời gian và năng suất cá nhân."
+  },
+  {
+    "word": "data-driven",
+    "wordType": "adjective",
+    "pronounce": "/ˈdeɪ.tə ˌdrɪv.ən/",
+    "meaning": "based on data and evidence rather than assumptions",
+    "translateVN": "dựa trên dữ liệu và bằng chứng",
+    "synonyms": [
+      "evidence-based",
+      "analytics-based"
+    ],
+    "antonyms": [
+      "intuitive",
+      "subjective"
+    ],
+    "forms": [],
+    "notes": "Từ phổ biến trong công nghệ và quản trị hiện đại."
+  },
+  {
+    "word": "insight",
+    "wordType": "noun",
+    "pronounce": "/ˈɪn.saɪt/",
+    "meaning": "a deep understanding of a person, situation, or system",
+    "translateVN": "hiểu biết sâu sắc, nhận thức sâu",
+    "synonyms": [
+      "awareness",
+      "perception",
+      "understanding"
+    ],
+    "antonyms": [
+      "ignorance"
+    ],
+    "forms": [
+      "insights"
+    ],
+    "notes": "Thường dùng trong data insight hoặc market insight."
+  },
+  {
+    "word": "deliverable outcome",
+    "wordType": "noun phrase",
+    "pronounce": "/dɪˈlɪv.ər.ə.bəl ˈaʊt.kʌm/",
+    "meaning": "a result or product that must be completed for a project’s success",
+    "translateVN": "kết quả bàn giao cần đạt được",
+    "synonyms": [
+      "output",
+      "deliverable",
+      "goal"
+    ],
+    "antonyms": [
+      "failure",
+      "delay"
+    ],
+    "forms": [],
+    "notes": "Thường gặp trong tài liệu dự án hoặc kế hoạch bàn giao phần mềm."
+  },
+  {
+    "word": "reporting",
+    "wordType": "noun",
+    "pronounce": "/rɪˈpɔː.tɪŋ/",
+    "meaning": "the process of collecting and presenting information about performance",
+    "translateVN": "báo cáo kết quả, thống kê hiệu suất",
+    "synonyms": [
+      "documentation",
+      "summary",
+      "presentation"
+    ],
+    "antonyms": [
+      "concealment"
+    ],
+    "forms": [
+      "report",
+      "reported"
+    ],
+    "notes": "Thường dùng trong hệ thống quản lý, phần mềm phân tích."
+  },
+  {
+    "word": "optimization strategy",
+    "wordType": "noun phrase",
+    "pronounce": "/ˌɒp.tɪ.maɪˈzeɪ.ʃən ˈstræt.ə.dʒi/",
+    "meaning": "a plan designed to improve efficiency and performance",
+    "translateVN": "chiến lược tối ưu hóa",
+    "synonyms": [
+      "efficiency plan",
+      "process improvement strategy"
+    ],
+    "antonyms": [
+      "ineffective plan"
+    ],
+    "forms": [],
+    "notes": "Cụm thường xuất hiện trong kỹ thuật, quản lý và phát triển phần mềm."
+  },
+  {
+    "word": "scalable solution",
+    "wordType": "noun phrase",
+    "pronounce": "/ˈskeɪ.lə.bəl səˈluː.ʃən/",
+    "meaning": "a solution that can grow and handle increased demand",
+    "translateVN": "giải pháp có khả năng mở rộng",
+    "synonyms": [
+      "expandable system",
+      "adaptive design"
+    ],
+    "antonyms": [
+      "rigid solution"
+    ],
+    "forms": [],
+    "notes": "Thường dùng trong công nghệ phần mềm và kiến trúc hệ thống."
+  },
+  {
+    "word": "alignment",
+    "wordType": "noun",
+    "pronounce": "/əˈlaɪn.mənt/",
+    "meaning": "the act of adjusting or matching goals and efforts with strategy",
+    "translateVN": "sự đồng nhất, thống nhất mục tiêu",
+    "synonyms": [
+      "coordination",
+      "harmony",
+      "agreement"
+    ],
+    "antonyms": [
+      "misalignment",
+      "conflict"
+    ],
+    "forms": [
+      "align",
+      "aligned"
+    ],
+    "notes": "Quan trọng trong teamwork và triển khai chiến lược."
+  },
+  {
+    "word": "execution gap",
+    "wordType": "noun phrase",
+    "pronounce": "/ˌek.sɪˈkjuː.ʃən ɡæp/",
+    "meaning": "the difference between planning and actual performance",
+    "translateVN": "khoảng cách giữa kế hoạch và thực thi",
+    "synonyms": [
+      "performance gap",
+      "strategy gap"
+    ],
+    "antonyms": [
+      "alignment"
+    ],
+    "forms": [],
+    "notes": "Cụm phổ biến trong quản trị chiến lược doanh nghiệp."
+  },
+  {
+    "word": "stakeholder communication",
+    "wordType": "noun phrase",
+    "pronounce": "/ˈsteɪkˌhoʊl.dɚ ˌkəˌmjuː.nɪˈkeɪ.ʃən/",
+    "meaning": "the process of sharing information with stakeholders",
+    "translateVN": "giao tiếp với các bên liên quan",
+    "synonyms": [
+      "stakeholder dialogue",
+      "project reporting"
+    ],
+    "antonyms": [
+      "non-communication"
+    ],
+    "forms": [],
+    "notes": "Một yếu tố quan trọng trong thành công của dự án."
+  },
+  {
+    "word": "continuous improvement",
+    "wordType": "noun phrase",
+    "pronounce": "/kənˈtɪn.ju.əs ɪmˈpruːv.mənt/",
+    "meaning": "the ongoing effort to enhance processes or performance",
+    "translateVN": "cải tiến liên tục",
+    "synonyms": [
+      "process enhancement",
+      "iteration"
+    ],
+    "antonyms": [
+      "stagnation"
+    ],
+    "forms": [],
+    "notes": "Nguyên tắc cốt lõi trong quản lý chất lượng và Agile."
+  },
+  {
+    "word": "accountability culture",
+    "wordType": "noun phrase",
+    "pronounce": "/əˌkaʊn.təˈbɪl.ə.ti ˈkʌl.tʃər/",
+    "meaning": "a work environment where people take responsibility for outcomes",
+    "translateVN": "văn hóa chịu trách nhiệm",
+    "synonyms": [
+      "responsibility culture",
+      "ownership mindset"
+    ],
+    "antonyms": [
+      "blame culture"
+    ],
+    "forms": [],
+    "notes": "Khái niệm quan trọng trong phát triển tổ chức hiện đại."
+  },
+  {
+    "word": "transparency policy",
+    "wordType": "noun phrase",
+    "pronounce": "/trænˈspær.ən.si ˈpɒl.ə.si/",
+    "meaning": "a set of rules that ensure openness in decision-making",
+    "translateVN": "chính sách minh bạch",
+    "synonyms": [
+      "open policy",
+      "disclosure policy"
+    ],
+    "antonyms": [
+      "secrecy rule"
+    ],
+    "forms": [],
+    "notes": "Dùng phổ biến trong quản trị doanh nghiệp và nhân sự."
+  },
+  {
+    "word": "performance dashboard",
+    "wordType": "noun phrase",
+    "pronounce": "/pəˈfɔː.məns ˈdæʃ.bɔːd/",
+    "meaning": "a visual tool showing real-time performance metrics",
+    "translateVN": "bảng điều khiển hiệu suất",
+    "synonyms": [
+      "analytics board",
+      "performance panel"
+    ],
+    "antonyms": [],
+    "forms": [],
+    "notes": "Cụm phổ biến trong phần mềm quản trị và theo dõi KPI."
+  },
+  {
+    "word": "remote monitoring",
+    "wordType": "noun phrase",
+    "pronounce": "/rɪˈməʊt ˈmɒn.ɪ.tər.ɪŋ/",
+    "meaning": "tracking systems or people from a different location",
+    "translateVN": "giám sát từ xa",
+    "synonyms": [
+      "offsite monitoring",
+      "virtual tracking"
+    ],
+    "antonyms": [
+      "on-site control"
+    ],
+    "forms": [],
+    "notes": "Thường gặp trong hệ thống IT hoặc môi trường hybrid."
+  },
+  {
+    "word": "efficiency metric",
+    "wordType": "noun phrase",
+    "pronounce": "/ɪˈfɪʃ.ən.si ˈmet.rɪk/",
+    "meaning": "a numerical value used to measure efficiency",
+    "translateVN": "chỉ số hiệu quả",
+    "synonyms": [
+      "performance metric",
+      "KPI"
+    ],
+    "antonyms": [
+      "inefficiency indicator"
+    ],
+    "forms": [],
+    "notes": "Thường xuất hiện trong các báo cáo hoặc hệ thống đo lường KPI."
+  },
+  {
+    "word": "accountability matrix",
+    "wordType": "noun phrase",
+    "pronounce": "/əˌkaʊn.təˈbɪl.ə.ti ˈmeɪ.trɪks/",
+    "meaning": "a chart defining who is responsible for each task",
+    "translateVN": "bảng phân quyền trách nhiệm",
+    "synonyms": [
+      "RACI chart",
+      "responsibility table"
+    ],
+    "antonyms": [],
+    "forms": [],
+    "notes": "Công cụ phổ biến trong quản lý dự án và quy trình nội bộ."
+  },
+  {
+    "word": "real-time insight",
+    "wordType": "noun phrase",
+    "pronounce": "/ˈrɪəl ˌtaɪm ˈɪn.saɪt/",
+    "meaning": "information obtained instantly as data updates occur",
+    "translateVN": "thông tin theo thời gian thực",
+    "synonyms": [
+      "live data insight",
+      "instant analysis"
+    ],
+    "antonyms": [
+      "delayed insight"
+    ],
+    "forms": [],
+    "notes": "Thường dùng trong phân tích dữ liệu và dashboard theo dõi."
+  },
+  {
+    "word": "continuous tracking",
+    "wordType": "noun phrase",
+    "pronounce": "/kənˈtɪn.ju.əs ˈtræk.ɪŋ/",
+    "meaning": "the process of monitoring something constantly over time",
+    "translateVN": "theo dõi liên tục",
+    "synonyms": [
+      "real-time monitoring",
+      "ongoing observation"
+    ],
+    "antonyms": [
+      "periodic tracking"
+    ],
+    "forms": [],
+    "notes": "Thường dùng trong phân tích dữ liệu và phần mềm quản lý."
   }
 ]
