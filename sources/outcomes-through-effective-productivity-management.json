@@ -1,0 +1,58 @@
+[
+  {
+    "word": "productivity management",
+    "pronounce": "/prəˌdʌk.tɪv.ə.ti ˈmæn.ɪdʒ.mənt/",
+    "wordType": "noun phrase",
+    "meaning": "a systematic approach to planning and controlling the efficiency and output of employees and processes",
+    "translateVN": "quản lý năng suất, phương pháp quản lý hiệu quả công việc",
+    "synonyms": [
+      "efficiency control",
+      "performance management"
+    ],
+    "antonyms": [
+      "inefficiency",
+      "mismanagement"
+    ],
+    "forms": [],
+    "audioURL": "https://dictionary.cambridge.org/media/english/us_pron/p/pro/productivity.mp3",
+    "notes": "Cụm từ phổ biến trong quản trị dự án và doanh nghiệp IT."
+  },
+  {
+    "word": "resource allocation",
+    "pronounce": "/rɪˈsɔːs ˌæləˈkeɪ.ʃən/",
+    "wordType": "noun phrase",
+    "meaning": "the process of distributing available resources among various projects or departments",
+    "translateVN": "phân bổ tài nguyên, phân chia nguồn lực",
+    "synonyms": [
+      "resource distribution",
+      "budgeting"
+    ],
+    "antonyms": [
+      "resource wastage"
+    ],
+    "forms": [],
+    "audioURL": "https://dictionary.cambridge.org/media/english/us_pron/r/res/resource.mp3",
+    "notes": "Thường dùng trong quản lý dự án và vận hành hệ thống IT."
+  },
+  {
+    "word": "workflow",
+    "pronounce": "/ˈwɜːk.fləʊ/",
+    "wordType": "noun",
+    "meaning": "the sequence of steps involved in a process or task, from start to completion",
+    "translateVN": "quy trình làm việc",
+    "synonyms": [
+      "process",
+      "procedure",
+      "operation flow"
+    ],
+    "antonyms": [
+      "disorder",
+      "chaos"
+    ],
+    "forms": [
+      "workflows"
+    ],
+    "audioURL": "https://dictionary.cambridge.org/media/english/us_pron/w/wor/workflow.mp3",
+    "notes": "Từ rất thông dụng trong môi trường công nghệ, Agile, DevOps."
+  }
+]
