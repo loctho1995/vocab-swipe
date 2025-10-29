@@ -892,14 +892,22 @@ function validateBulkJson() {
     }
     
     try {
-        const words = JSON.parse(jsonInput);
+        let data = JSON.parse(jsonInput);
+        let words = [];
         
-        if (!Array.isArray(words)) {
-            throw new Error('JSON phải là một array');
+        // Nếu là object đơn, chuyển thành array
+        if (!Array.isArray(data)) {
+            if (typeof data === 'object' && data !== null) {
+                words = [data];
+            } else {
+                throw new Error('JSON phải là object hoặc array');
+            }
+        } else {
+            words = data;
         }
         
         if (words.length === 0) {
-            throw new Error('Array không được rỗng');
+            throw new Error('Không có từ nào để thêm');
         }
         
         // Validate structure
@@ -931,7 +939,16 @@ async function importBulkJson() {
     if (!validateBulkJson()) return;
     
     try {
-        const words = JSON.parse(jsonInput);
+        let data = JSON.parse(jsonInput);
+        let words = [];
+        
+        // Nếu là object đơn, chuyển thành array
+        if (!Array.isArray(data)) {
+            words = [data];
+        } else {
+            words = data;
+        }
+        
         const source = sources[currentEditingSource];
         
         // Add all words to source

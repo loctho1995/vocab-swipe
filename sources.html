@@ -204,19 +204,21 @@
                     <!-- Tab Content: JSON Import -->
                     <div class="edit-tab-content" id="jsonTab">
                         <div class="add-word-form">
-                            <h5>📋 Import JSON (Nhiều từ cùng lúc)</h5>
+                            <h5>📋 Import JSON (1 từ hoặc nhiều từ)</h5>
                             <p style="font-size: 0.8rem; color: #666; margin-bottom: 8px;">
-                                Dán JSON array các từ vào bên dưới. Có thể import 1 từ hoặc nhiều từ cùng lúc.
+                                Dán JSON vào bên dưới. Có thể là <strong>1 object</strong> hoặc <strong>1 array</strong>:
                             </p>
                             <textarea 
                                 id="bulkJsonInput" 
                                 class="input-textarea" 
                                 rows="8"
-                                placeholder='[{"word": "example", "wordType": "noun", "meaning": "...", "translateVN": "..."}]'
+                                placeholder='1 từ: {"word": "example", "wordType": "noun", "meaning": "...", "translateVN": "..."}
+
+hoặc nhiều từ: [{"word": "word1", ...}, {"word": "word2", ...}]'
                             ></textarea>
                             <div class="form-actions">
                                 <button id="validateBulkBtn" class="btn-secondary">🔍 Kiểm tra</button>
-                                <button id="importBulkBtn" class="btn-primary">➕ Thêm tất cả</button>
+                                <button id="importBulkBtn" class="btn-primary">➕ Thêm</button>
                             </div>
                             <div id="bulkImportStatus" class="import-status"></div>
                         </div>
