@@ -162,6 +162,45 @@
             </div>
         </div>
 
+        <!-- Edit Source Modal -->
+        <div id="editSourceModal" class="modal">
+            <div class="modal-content modal-large">
+                <div class="modal-header">
+                    <h3>✏️ Chỉnh sửa Source</h3>
+                    <button class="btn-close" id="closeEditSourceBtn">✕</button>
+                </div>
+                
+                <div class="edit-source-container">
+                    <div class="edit-source-header">
+                        <h4 id="editSourceName">—</h4>
+                        <div class="edit-source-stats">
+                            <span id="editSourceCount">0 từ</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Add New Word Form -->
+                    <div class="add-word-form">
+                        <h5>➕ Thêm từ mới</h5>
+                        <div class="form-row">
+                            <input type="text" id="newWord" class="input-text" placeholder="Từ tiếng Anh *">
+                            <input type="text" id="newWordType" class="input-text" placeholder="Loại từ *">
+                        </div>
+                        <div class="form-row">
+                            <input type="text" id="newPronounce" class="input-text" placeholder="Phát âm">
+                        </div>
+                        <textarea id="newMeaning" class="input-textarea" rows="2" placeholder="Định nghĩa tiếng Anh *"></textarea>
+                        <textarea id="newTranslateVN" class="input-textarea" rows="2" placeholder="Nghĩa tiếng Việt *"></textarea>
+                        <button id="addWordBtn" class="btn-primary full-width">➕ Thêm từ</button>
+                    </div>
+                    
+                    <!-- Words List -->
+                    <div class="edit-words-list" id="editWordsList">
+                        <p class="empty-message">Chưa có từ nào</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Import Modal -->
         <div id="importModal" class="modal">
             <div class="modal-content modal-large">

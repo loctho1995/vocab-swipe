@@ -23,6 +23,7 @@ let sources = {}; // { sourceName: { words: [], fileName: string } }
 let learnedWords = {}; // { sourceName: [word1, word2, ...] }
 let currentSourceName = '';
 let currentWord = null;
+let currentEditingSource = ''; // Source đang được edit
 
 // ============ STORAGE UTILS ============
 function saveToStorage(key, data) {
@@ -559,6 +560,7 @@ function renderSourcesList() {
                 </div>
                 <div class="source-actions">
                     <button class="btn-small btn-select" data-source="${name}">Chọn</button>
+                    <button class="btn-small" style="background: #f59e0b; color: white;" data-edit="${name}">✏️ Sửa</button>
                     <button class="btn-small btn-delete" data-file="${source.fileName}">Xóa</button>
                 </div>
             </div>
@@ -575,6 +577,14 @@ function renderSourcesList() {
             updateSourceButton();
             hideModal('sourcesModal');
             loadNextWord();
+        });
+    });
+    
+    // Edit button
+    list.querySelectorAll('[data-edit]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const sourceName = btn.dataset.edit;
+            openEditSourceModal(sourceName);
         });
     });
     
@@ -724,6 +734,145 @@ document.getElementById('resetBtn').addEventListener('click', () => {
         loadNextWord();
     }
 });
+
+// ============ EDIT SOURCE FUNCTIONS ============
+function openEditSourceModal(sourceName) {
+    currentEditingSource = sourceName;
+    const source = sources[sourceName];
+    
+    if (!source) return;
+    
+    // Update header
+    document.getElementById('editSourceName').textContent = sourceName;
+    document.getElementById('editSourceCount').textContent = `${source.totalWords} từ`;
+    
+    // Render words list
+    renderEditWordsList();
+    
+    // Show modal
+    hideModal('sourcesModal');
+    showModal('editSourceModal');
+}
+
+function renderEditWordsList() {
+    const list = document.getElementById('editWordsList');
+    const source = sources[currentEditingSource];
+    
+    if (!source || !source.words || source.words.length === 0) {
+        list.innerHTML = '<p class="empty-message">Chưa có từ nào</p>';
+        return;
+    }
+    
+    list.innerHTML = source.words.map((word, index) => `
+        <div class="edit-word-item">
+            <div class="edit-word-header">
+                <div class="edit-word-title">
+                    <div class="edit-word-name">${word.word}</div>
+                    <span class="edit-word-type">${word.wordType}</span>
+                </div>
+                <button class="btn-delete-word" data-index="${index}">🗑️</button>
+            </div>
+            <div class="edit-word-content">
+                <div class="edit-word-meaning">${word.meaning || '—'}</div>
+                <div class="edit-word-translation">🇻🇳 ${word.translateVN || '—'}</div>
+            </div>
+        </div>
+    `).join('');
+    
+    // Add delete handlers
+    list.querySelectorAll('.btn-delete-word').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const index = parseInt(btn.dataset.index);
+            deleteWordFromSource(index);
+        });
+    });
+}
+
+async function deleteWordFromSource(index) {
+    const source = sources[currentEditingSource];
+    const word = source.words[index];
+    
+    if (!confirm(`Xóa từ "${word.word}" khỏi source?`)) return;
+    
+    // Remove word
+    source.words.splice(index, 1);
+    source.totalWords = source.words.length;
+    
+    // Save to server
+    const success = await saveSourceToServer(currentEditingSource, source.words);
+    
+    if (success) {
+        // Update count
+        document.getElementById('editSourceCount').textContent = `${source.totalWords} từ`;
+        renderEditWordsList();
+    } else {
+        alert('Xóa thất bại!');
+    }
+}
+
+async function addWordToSource() {
+    const word = document.getElementById('newWord').value.trim();
+    const wordType = document.getElementById('newWordType').value.trim();
+    const pronounce = document.getElementById('newPronounce').value.trim();
+    const meaning = document.getElementById('newMeaning').value.trim();
+    const translateVN = document.getElementById('newTranslateVN').value.trim();
+    
+    // Validate
+    if (!word || !wordType || !meaning || !translateVN) {
+        alert('Vui lòng điền đầy đủ các trường bắt buộc (*)');
+        return;
+    }
+    
+    const source = sources[currentEditingSource];
+    
+    // Create new word object
+    const newWord = {
+        word: word,
+        wordType: wordType,
+        pronounce: pronounce,
+        meaning: meaning,
+        translateVN: translateVN,
+        synonyms: [],
+        antonyms: [],
+        forms: [],
+        notes: ''
+    };
+    
+    // Add to source
+    source.words.push(newWord);
+    source.totalWords = source.words.length;
+    
+    // Save to server
+    const success = await saveSourceToServer(currentEditingSource, source.words);
+    
+    if (success) {
+        // Clear form
+        document.getElementById('newWord').value = '';
+        document.getElementById('newWordType').value = '';
+        document.getElementById('newPronounce').value = '';
+        document.getElementById('newMeaning').value = '';
+        document.getElementById('newTranslateVN').value = '';
+        
+        // Update count
+        document.getElementById('editSourceCount').textContent = `${source.totalWords} từ`;
+        
+        // Refresh list
+        renderEditWordsList();
+        
+        alert('✓ Đã thêm từ mới!');
+    } else {
+        alert('Thêm từ thất bại!');
+    }
+}
+
+// ============ EDIT SOURCE EVENT LISTENERS ============
+document.getElementById('closeEditSourceBtn').addEventListener('click', () => {
+    hideModal('editSourceModal');
+    showModal('sourcesModal');
+    renderSourcesList();
+});
+
+document.getElementById('addWordBtn').addEventListener('click', addWordToSource);
 
 // ============ INIT ============
 async function init() {

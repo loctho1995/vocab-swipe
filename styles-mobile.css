@@ -734,3 +734,124 @@ body {
         font-size: 1.9rem;
     }
 }
+
+/* ============ EDIT SOURCE ============ */
+.edit-source-container {
+    padding: 16px;
+}
+
+.edit-source-header {
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.edit-source-header h4 {
+    font-size: 1.1rem;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.edit-source-stats {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.add-word-form {
+    background: #f8fafc;
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 16px;
+}
+
+.add-word-form h5 {
+    font-size: 0.95rem;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.form-row {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 6px;
+}
+
+.form-row .input-text {
+    flex: 1;
+}
+
+.add-word-form .input-text,
+.add-word-form .input-textarea {
+    margin-bottom: 6px;
+}
+
+.full-width {
+    width: 100%;
+}
+
+.edit-words-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.edit-word-item {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 6px;
+}
+
+.edit-word-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 6px;
+}
+
+.edit-word-title {
+    flex: 1;
+}
+
+.edit-word-name {
+    font-weight: 600;
+    color: #667eea;
+    font-size: 0.95rem;
+}
+
+.edit-word-type {
+    font-size: 0.75rem;
+    color: #666;
+    background: #e0e7ff;
+    padding: 2px 6px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-top: 2px;
+}
+
+.btn-delete-word {
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.edit-word-content {
+    font-size: 0.8rem;
+    color: #555;
+    line-height: 1.4;
+}
+
+.edit-word-meaning {
+    margin-bottom: 4px;
+}
+
+.edit-word-translation {
+    color: #333;
+    font-weight: 500;
+}
+
