@@ -241,7 +241,14 @@ hoặc nhiều từ: [{"word": "word1", ...}, {"word": "word2", ...}]'
                 </div>
                 
                 <div class="import-form">
-                    <div class="form-group">
+                    <!-- Tabs -->
+                    <div class="edit-tabs">
+                        <button class="edit-tab active" data-tab="paste">📋 Dán JSON</button>
+                        <button class="edit-tab" data-tab="file">📁 Từ File</button>
+                    </div>
+                    
+                    <!-- Source Name (common) -->
+                    <div class="form-group" style="margin-top: 12px;">
                         <label for="sourceNameInput">Tên bộ từ vựng:</label>
                         <input 
                             type="text" 
@@ -251,19 +258,44 @@ hoặc nhiều từ: [{"word": "word1", ...}, {"word": "word2", ...}]'
                         >
                     </div>
                     
-                    <div class="form-group">
-                        <label for="wordsJsonInput">Dán JSON array của các từ vựng:</label>
-                        <textarea 
-                            id="wordsJsonInput" 
-                            class="input-textarea" 
-                            rows="8"
-                            placeholder='[{"word": "emphasize", "wordType": "verb", "meaning": "...", "translateVN": "nhấn mạnh"}]'
-                        ></textarea>
+                    <!-- Tab Content: Paste JSON -->
+                    <div class="edit-tab-content active" id="pasteJsonTab">
+                        <div class="form-group">
+                            <label for="wordsJsonInput">Dán JSON array của các từ vựng:</label>
+                            <textarea 
+                                id="wordsJsonInput" 
+                                class="input-textarea" 
+                                rows="8"
+                                placeholder='[{"word": "emphasize", "wordType": "verb", "meaning": "...", "translateVN": "nhấn mạnh"}]'
+                            ></textarea>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button id="validateJsonBtn" class="btn-secondary">🔍 Kiểm tra</button>
+                            <button id="importJsonBtn" class="btn-primary">💾 Lưu Source</button>
+                        </div>
                     </div>
                     
-                    <div class="form-actions">
-                        <button id="validateJsonBtn" class="btn-secondary">🔍 Kiểm tra</button>
-                        <button id="importJsonBtn" class="btn-primary">💾 Lưu Source</button>
+                    <!-- Tab Content: File Upload -->
+                    <div class="edit-tab-content" id="fileUploadTab">
+                        <div class="form-group">
+                            <label for="jsonFileInput">Chọn file JSON:</label>
+                            <input 
+                                type="file" 
+                                id="jsonFileInput" 
+                                class="input-text" 
+                                accept=".json"
+                                style="padding: 8px;"
+                            >
+                            <p style="font-size: 0.75rem; color: #666; margin-top: 4px;">
+                                File phải là JSON array: [{"word": "...", "wordType": "...", ...}]
+                            </p>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button id="validateFileBtn" class="btn-secondary">🔍 Kiểm tra File</button>
+                            <button id="importFileBtn" class="btn-primary">💾 Lưu Source từ File</button>
+                        </div>
                     </div>
                     
                     <div id="importStatus" class="import-status"></div>

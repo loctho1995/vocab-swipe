@@ -698,6 +698,98 @@ document.getElementById('importJsonBtn').addEventListener('click', async () => {
     }
 });
 
+// ============ FILE UPLOAD HANDLERS ============
+document.getElementById('validateFileBtn').addEventListener('click', async () => {
+    const fileInput = document.getElementById('jsonFileInput');
+    const status = document.getElementById('importStatus');
+    
+    if (!fileInput.files || fileInput.files.length === 0) {
+        status.className = 'import-status error';
+        status.textContent = '⚠️ Vui lòng chọn file';
+        return;
+    }
+    
+    const file = fileInput.files[0];
+    
+    try {
+        const text = await file.text();
+        const words = JSON.parse(text);
+        
+        if (!Array.isArray(words)) {
+            throw new Error('JSON phải là một array');
+        }
+        
+        if (words.length === 0) {
+            throw new Error('Array không được rỗng');
+        }
+        
+        // Validate structure
+        const requiredFields = ['word', 'wordType', 'meaning', 'translateVN'];
+        const firstWord = words[0];
+        
+        for (const field of requiredFields) {
+            if (!firstWord[field]) {
+                throw new Error(`Thiếu field bắt buộc: ${field}`);
+            }
+        }
+        
+        status.className = 'import-status success';
+        status.textContent = `✓ File hợp lệ! ${words.length} từ`;
+    } catch (error) {
+        status.className = 'import-status error';
+        status.textContent = `⚠️ Lỗi: ${error.message}`;
+    }
+});
+
+document.getElementById('importFileBtn').addEventListener('click', async () => {
+    const name = document.getElementById('sourceNameInput').value.trim();
+    const fileInput = document.getElementById('jsonFileInput');
+    const status = document.getElementById('importStatus');
+    
+    if (!name) {
+        status.className = 'import-status error';
+        status.textContent = '⚠️ Vui lòng nhập tên';
+        return;
+    }
+    
+    if (!fileInput.files || fileInput.files.length === 0) {
+        status.className = 'import-status error';
+        status.textContent = '⚠️ Vui lòng chọn file';
+        return;
+    }
+    
+    const file = fileInput.files[0];
+    
+    try {
+        const text = await file.text();
+        const words = JSON.parse(text);
+        
+        const success = await saveSourceToServer(name, words);
+        
+        if (success) {
+            status.className = 'import-status success';
+            status.textContent = `✓ Đã lưu "${name}"! (${words.length} từ)`;
+            
+            // Reload sources
+            await fetchSourcesFromServer();
+            updateSourceButton();
+            
+            // Clear form
+            setTimeout(() => {
+                document.getElementById('sourceNameInput').value = '';
+                fileInput.value = '';
+                status.textContent = '';
+                hideModal('importModal');
+            }, 1500);
+        } else {
+            throw new Error('Lưu thất bại');
+        }
+    } catch (error) {
+        status.className = 'import-status error';
+        status.textContent = `⚠️ Lỗi: ${error.message}`;
+    }
+});
+
 // ============ ACTIONS ============
 document.getElementById('markLearnedBtn').addEventListener('click', () => {
     if (!currentWord) return;
@@ -1014,20 +1106,35 @@ document.getElementById('importBulkBtn').addEventListener('click', importBulkJso
 document.querySelectorAll('.edit-tab').forEach(tab => {
     tab.addEventListener('click', () => {
         const tabName = tab.dataset.tab;
+        const modalId = tab.closest('.modal').id;
         
         // Update tabs
-        document.querySelectorAll('.edit-tab').forEach(t => t.classList.remove('active'));
+        tab.closest('.edit-tabs').querySelectorAll('.edit-tab').forEach(t => t.classList.remove('active'));
         tab.classList.add('active');
         
-        // Update content
-        document.querySelectorAll('.edit-tab-content').forEach(content => {
-            content.classList.remove('active');
-        });
-        
-        if (tabName === 'manual') {
-            document.getElementById('manualTab').classList.add('active');
-        } else if (tabName === 'json') {
-            document.getElementById('jsonTab').classList.add('active');
+        // Update content based on modal
+        if (modalId === 'editSourceModal') {
+            // Edit source modal tabs
+            document.querySelectorAll('#editSourceModal .edit-tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            if (tabName === 'manual') {
+                document.getElementById('manualTab').classList.add('active');
+            } else if (tabName === 'json') {
+                document.getElementById('jsonTab').classList.add('active');
+            }
+        } else if (modalId === 'importModal') {
+            // Import modal tabs
+            document.querySelectorAll('#importModal .edit-tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            if (tabName === 'paste') {
+                document.getElementById('pasteJsonTab').classList.add('active');
+            } else if (tabName === 'file') {
+                document.getElementById('fileUploadTab').classList.add('active');
+            }
         }
     });
 });
