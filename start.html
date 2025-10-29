@@ -65,6 +65,7 @@
             position: relative;
             overflow: hidden;
             transition: all 0.3s;
+            cursor: pointer;
         }
         
         .version-card:hover {
@@ -146,14 +147,6 @@
             font-weight: 600;
             text-align: center;
             transition: all 0.3s;
-            border: none;
-            cursor: pointer;
-            font-size: 1rem;
-            margin-bottom: 8px;
-        }
-        
-        .btn:last-child {
-            margin-bottom: 0;
         }
         
         .version-card.featured .btn {
@@ -170,25 +163,6 @@
         .version-card.featured .btn:hover {
             background: white;
             color: #667eea;
-        }
-        
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.5);
-            color: #667eea;
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            font-size: 0.9rem;
-            padding: 10px 20px;
-        }
-        
-        .version-card.featured .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.5);
-        }
-        
-        .version-card.featured .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
         }
         
         .resources {
@@ -257,7 +231,7 @@
         
         <div class="versions">
             <!-- Random Version -->
-            <div class="version-card">
+            <div class="version-card" onclick="window.location.href='index.html'">
                 <div class="version-icon">🎲</div>
                 <h2 class="version-title">Random Mode</h2>
                 <p class="version-desc">Học từ vựng ngẫu nhiên từ API</p>
@@ -267,11 +241,11 @@
                     <li class="feature-item">Đơn giản, nhanh chóng</li>
                     <li class="feature-item">Swipe gesture</li>
                 </ul>
-                <a href="index-random.html" class="btn">Bắt đầu học</a>
+                <a href="index.html" class="btn">Bắt đầu học</a>
             </div>
             
             <!-- Sources Version -->
-            <div class="version-card featured">
+            <div class="version-card featured" onclick="window.location.href='quick-start.html'">
                 <span class="badge">KHUYẾN NGHỊ</span>
                 <div class="version-icon">📁</div>
                 <h2 class="version-title">Sources Mode</h2>
@@ -284,8 +258,7 @@
                     <li class="feature-item">Select text trên card</li>
                     <li class="feature-item">Export & Share</li>
                 </ul>
-                <a href="index-sources.html" class="btn">🎯 Học ngay</a>
-                <a href="quick-start.html" class="btn btn-secondary">📖 Xem hướng dẫn</a>
+                <a href="quick-start.html" class="btn">Xem hướng dẫn</a>
             </div>
         </div>
         
@@ -296,7 +269,7 @@
                     <span class="resource-icon">📘</span>
                     <span>Hướng dẫn tổng quan</span>
                 </a>
-                <a href="README-random.md" class="resource-link" target="_blank">
+                <a href="README.md" class="resource-link" target="_blank">
                     <span class="resource-icon">📄</span>
                     <span>README Random Mode</span>
                 </a>

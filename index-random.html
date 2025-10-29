@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vocab Swipe - Học từ vựng Anh Việt</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <a href="index.html" class="btn-icon" title="Trang chủ" style="text-decoration: none;">🏠</a>
+                <h1 class="logo">📚 Vocab Swipe</h1>
+            </div>
+            <div class="header-actions">
+                <button id="searchBtn" class="btn-icon" title="Tìm kiếm từ">🔍</button>
+                <button id="historyBtn" class="btn-icon" title="Đã xem">📖</button>
+            </div>
+        </header>
+
+        <!-- Loading State -->
+        <div id="loadingScreen" class="loading-screen">
+            <div class="spinner"></div>
+            <p>Đang tải từ vựng...</p>
+        </div>
+
+        <!-- Main Card -->
+        <div id="mainCard" class="card-container" style="display: none;">
+            <div class="swipe-card" id="swipeCard">
+                <!-- Word Header -->
+                <div class="word-header">
+                    <h2 class="word-text" id="wordText">—</h2>
+                    <button id="audioBtn" class="btn-audio" title="Phát âm">🔊</button>
+                </div>
+
+                <!-- Phonetic -->
+                <div class="phonetic" id="phonetic">—</div>
+
+                <!-- Part of Speech -->
+                <div class="pos-badges" id="posBadges"></div>
+
+                <!-- Vietnamese Translation -->
+                <div class="translation-box">
+                    <div class="translation-label">🇻🇳 Nghĩa tiếng Việt:</div>
+                    <div class="translation-text" id="translationText">—</div>
+                </div>
+
+                <!-- Definition -->
+                <div class="definition-box">
+                    <div class="definition-label">📖 Định nghĩa:</div>
+                    <div class="definition-text" id="definitionText">—</div>
+                </div>
+
+                <!-- Example -->
+                <div class="example-box" id="exampleBox" style="display: none;">
+                    <div class="example-label">💡 Ví dụ:</div>
+                    <div class="example-text" id="exampleText">—</div>
+                </div>
+
+                <!-- Verb Forms -->
+                <div class="verb-forms" id="verbForms" style="display: none;">
+                    <div class="verb-forms-label">🔄 Các dạng động từ:</div>
+                    <div class="verb-forms-grid" id="verbFormsGrid"></div>
+                </div>
+
+                <!-- Related Words by POS -->
+                <div class="related-section" id="relatedSection" style="display: none;">
+                    <div class="section-title">🔍 Từ liên quan theo loại:</div>
+                    <div id="relatedContent"></div>
+                </div>
+
+                <!-- Synonyms -->
+                <div class="synonyms-section" id="synonymsSection" style="display: none;">
+                    <div class="section-title">🔗 Từ đồng nghĩa:</div>
+                    <div class="chip-container" id="synonymsChips"></div>
+                </div>
+
+                <!-- Actions -->
+                <div class="card-actions">
+                    <button id="aiBtn" class="btn-ai">🤖 Hỏi AI</button>
+                    <button id="nextWordBtn" class="btn-primary">➡️ Từ tiếp theo</button>
+                </div>
+
+                <!-- Swipe Instruction -->
+                <div class="swipe-instruction">
+                    👈 Vuốt trái để lưu và xem từ tiếp theo
+                </div>
+            </div>
+
+            <!-- Swipe Indicator -->
+            <div id="swipeIndicator" class="swipe-indicator"></div>
+        </div>
+
+        <!-- Search Modal -->
+        <div id="searchModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>🔍 Tìm kiếm từ vựng</h3>
+                    <button class="btn-close" id="closeSearchBtn">✕</button>
+                </div>
+                <form id="searchForm">
+                    <input 
+                        type="text" 
+                        id="searchInput" 
+                        class="input-text" 
+                        placeholder="Nhập từ tiếng Anh..." 
+                        autocomplete="off"
+                    >
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary full-width">Tìm kiếm</button>
+                    </div>
+                    <div class="suggestions-label">Gợi ý từ phổ biến:</div>
+                    <div class="suggestions-chips" id="suggestionsChips"></div>
+                </form>
+            </div>
+        </div>
+
+        <!-- History Modal -->
+        <div id="historyModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>📖 Từ đã xem (<span id="historyCount">0</span>)</h3>
+                    <button class="btn-close" id="closeHistoryBtn">✕</button>
+                </div>
+                <div class="history-actions">
+                    <button id="clearHistoryBtn" class="btn-danger">🗑️ Xóa tất cả</button>
+                </div>
+                <div id="historyList" class="history-list">
+                    <p class="empty-message">Chưa có từ nào được lưu</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Nguồn: Datamuse, Free Dictionary API, MyMemory Translate</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

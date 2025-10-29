@@ -1,0 +1,122 @@
+[
+  {
+    "word": "proactive",
+    "pronounce": "/proʊˈæk.tɪv/",
+    "wordType": "adjective",
+    "meaning": "taking action by causing change and not only reacting to change when it happens",
+    "translateVN": "chủ động, tiên phong, tích cực hành động trước",
+    "synonyms": ["preventive", "anticipatory", "forward-thinking"],
+    "antonyms": ["reactive", "passive", "inactive"],
+    "forms": ["proactively", "proactiveness"],
+    "audioURL": "",
+    "notes": "Thường dùng trong môi trường công việc để mô tả người chủ động giải quyết vấn đề trước khi nó xảy ra."
+  },
+  {
+    "word": "active",
+    "pronounce": "/ˈæk.tɪv/",
+    "wordType": "adjective",
+    "meaning": "being involved in action; busy with a particular activity",
+    "translateVN": "năng động, tích cực, hoạt động",
+    "synonyms": ["energetic", "dynamic", "busy", "lively"],
+    "antonyms": ["inactive", "passive", "idle", "dormant"],
+    "forms": ["actively", "activeness", "activity"],
+    "audioURL": "",
+    "notes": "Từ cơ bản mô tả trạng thái năng động, hay hoạt động."
+  },
+  {
+    "word": "positive",
+    "pronounce": "/ˈpɑː.zə.tɪv/",
+    "wordType": "adjective",
+    "meaning": "full of hope and confidence, or giving cause for hope and confidence; certain and without doubt",
+    "translateVN": "tích cực, lạc quan, khẳng định, chắc chắn",
+    "synonyms": ["optimistic", "constructive", "affirmative", "confident"],
+    "antonyms": ["negative", "pessimistic", "doubtful"],
+    "forms": ["positively", "positiveness", "positivity"],
+    "audioURL": "",
+    "notes": "Có nhiều nghĩa: tích cực về thái độ, khẳng định về ý kiến, dương tính trong y học."
+  },
+  {
+    "word": "negative",
+    "pronounce": "/ˈneɡ.ə.tɪv/",
+    "wordType": "adjective",
+    "meaning": "expressing or meaning a refusal or denial; harmful, bad or not wanted",
+    "translateVN": "tiêu cực, phủ định, không tốt, âm tính",
+    "synonyms": ["pessimistic", "harmful", "unfavorable", "bad"],
+    "antonyms": ["positive", "optimistic", "favorable", "good"],
+    "forms": ["negatively", "negativeness", "negativity"],
+    "audioURL": "",
+    "notes": "Trái nghĩa với positive, mô tả điều không tốt hoặc thái độ bi quan."
+  },
+  {
+    "word": "emphasize",
+    "pronounce": "/ˈem.fə.saɪz/",
+    "wordType": "verb",
+    "meaning": "to give special importance or attention to something; to stress; to make something more noticeable",
+    "translateVN": "nhấn mạnh, làm nổi bật, đề cao tầm quan trọng",
+    "synonyms": ["highlight", "stress", "underline", "accentuate"],
+    "antonyms": ["ignore", "neglect", "understate"],
+    "forms": ["emphasizes", "emphasized", "emphasizing"],
+    "audioURL": "https://dictionary.cambridge.org/media/english/us_pron/e/emp/empha/emphasize.mp3",
+    "notes": "Thường dùng khi muốn làm nổi bật ý chính trong bài viết hoặc khi diễn thuyết."
+  },
+  {
+    "word": "achieve",
+    "pronounce": "/əˈtʃiːv/",
+    "wordType": "verb",
+    "meaning": "to succeed in finishing something or reaching an aim, especially after a lot of work or effort",
+    "translateVN": "đạt được, hoàn thành, giành được",
+    "synonyms": ["accomplish", "attain", "reach", "realize"],
+    "antonyms": ["fail", "lose", "miss"],
+    "forms": ["achieves", "achieved", "achieving", "achievement"],
+    "audioURL": "",
+    "notes": "Dùng khi nói về việc đạt được mục tiêu sau nỗ lực."
+  },
+  {
+    "word": "efficient",
+    "pronounce": "/ɪˈfɪʃ.ənt/",
+    "wordType": "adjective",
+    "meaning": "working or operating quickly and effectively in an organized way",
+    "translateVN": "hiệu quả, năng suất cao, làm việc tốt",
+    "synonyms": ["effective", "productive", "competent"],
+    "antonyms": ["inefficient", "wasteful", "unproductive"],
+    "forms": ["efficiently", "efficiency"],
+    "audioURL": "",
+    "notes": "Thường dùng để mô tả hệ thống, quy trình làm việc tốt."
+  },
+  {
+    "word": "innovative",
+    "pronounce": "/ˈɪn.ə.veɪ.tɪv/",
+    "wordType": "adjective",
+    "meaning": "using new methods or ideas; introducing or using new ideas, ways of doing something",
+    "translateVN": "sáng tạo, đổi mới, tiên tiến",
+    "synonyms": ["creative", "original", "inventive", "pioneering"],
+    "antonyms": ["conventional", "traditional", "unoriginal"],
+    "forms": ["innovatively", "innovation", "innovate"],
+    "audioURL": "",
+    "notes": "Dùng cho sản phẩm, ý tưởng, cách làm mới mẻ, sáng tạo."
+  },
+  {
+    "word": "collaborate",
+    "pronounce": "/kəˈlæb.ə.reɪt/",
+    "wordType": "verb",
+    "meaning": "to work with someone else for a special purpose",
+    "translateVN": "hợp tác, cộng tác, làm việc chung",
+    "synonyms": ["cooperate", "work together", "team up"],
+    "antonyms": ["compete", "oppose", "rival"],
+    "forms": ["collaborates", "collaborated", "collaborating", "collaboration"],
+    "audioURL": "",
+    "notes": "Dùng trong môi trường làm việc nhóm, dự án chung."
+  },
+  {
+    "word": "persistent",
+    "pronounce": "/pɚˈsɪs.tənt/",
+    "wordType": "adjective",
+    "meaning": "lasting for a long time or difficult to get rid of; continuing to exist or happen",
+    "translateVN": "kiên trì, bền bỉ, dai dẳng, liên tục",
+    "synonyms": ["determined", "tenacious", "steadfast", "constant"],
+    "antonyms": ["inconsistent", "wavering", "irresolute"],
+    "forms": ["persistently", "persistence", "persist"],
+    "audioURL": "",
+    "notes": "Có nghĩa tích cực (kiên trì) và tiêu cực (dai dẳng - khó trị)."
+  }
+]

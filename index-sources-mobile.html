@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Vocab Swipe</title>
+    <link rel="stylesheet" href="styles-mobile.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Compact Header -->
+        <header class="header">
+            <button id="menuBtn" class="btn-menu" title="Menu">☰</button>
+            <select id="currentSource" class="source-select">
+                <option value="">Chọn bộ từ...</option>
+            </select>
+            <button id="learnedMenuBtn" class="btn-icon" title="Từ đã học">✓</button>
+        </header>
+
+        <!-- Loading State -->
+        <div id="loadingScreen" class="loading-screen">
+            <div class="spinner"></div>
+            <p id="loadingText">Đang tải...</p>
+        </div>
+
+        <!-- Main Card -->
+        <div id="mainCard" class="card-container" style="display: none;">
+            <div class="swipe-card" id="swipeCard">
+                <!-- Word Header -->
+                <div class="word-header">
+                    <div class="word-info">
+                        <h2 class="word-text" id="wordText">—</h2>
+                        <div class="word-meta">
+                            <span class="word-type" id="wordType">—</span>
+                            <span class="phonetic" id="phonetic">—</span>
+                        </div>
+                    </div>
+                    <button id="audioBtn" class="btn-audio" title="Phát âm">🔊</button>
+                </div>
+
+                <!-- Vietnamese Translation -->
+                <div class="translation-box">
+                    <div class="section-label">🇻🇳 Tiếng Việt</div>
+                    <div class="translation-text" id="translationText">—</div>
+                </div>
+
+                <!-- English Meaning -->
+                <div class="definition-box">
+                    <div class="section-label">📖 English</div>
+                    <div class="definition-text" id="definitionText">—</div>
+                </div>
+
+                <!-- Word Forms -->
+                <div class="compact-section" id="wordForms" style="display: none;">
+                    <div class="section-label">🔄 Các dạng từ</div>
+                    <div class="chip-container" id="wordFormsChips"></div>
+                </div>
+
+                <!-- Synonyms -->
+                <div class="compact-section" id="synonymsSection" style="display: none;">
+                    <div class="section-label">🔗 Đồng nghĩa</div>
+                    <div class="chip-container" id="synonymsChips"></div>
+                </div>
+
+                <!-- Antonyms -->
+                <div class="compact-section" id="antonymsSection" style="display: none;">
+                    <div class="section-label">↔️ Trái nghĩa</div>
+                    <div class="chip-container" id="antonymsChips"></div>
+                </div>
+
+                <!-- Notes -->
+                <div class="notes-box" id="notesBox" style="display: none;">
+                    <div class="section-label">💡 Ghi chú</div>
+                    <div class="notes-text" id="notesText">—</div>
+                </div>
+
+                <!-- Actions -->
+                <div class="card-actions">
+                    <button id="learnedBtn" class="btn-learned">✓ Đã học</button>
+                </div>
+
+                <!-- Swipe Instruction -->
+                <div class="swipe-instruction">
+                    👈 Vuốt trái = Đã học
+                </div>
+            </div>
+
+            <!-- Swipe Indicator -->
+            <div id="swipeIndicator" class="swipe-indicator"></div>
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <div class="empty-icon">📚</div>
+            <h2>Chưa có bộ từ vựng</h2>
+            <p>Hãy import hoặc tạo bộ từ để bắt đầu học!</p>
+            <button id="openImportBtn" class="btn-primary">📥 Import từ vựng</button>
+        </div>
+
+        <!-- Completion State -->
+        <div id="completionState" class="empty-state" style="display: none;">
+            <div class="empty-icon">🎉</div>
+            <h2>Chúc mừng!</h2>
+            <p id="completionText">Bạn đã học xong bộ từ này!</p>
+            <button id="resetBtn" class="btn-primary">🔄 Học lại</button>
+        </div>
+
+        <!-- Menu Modal -->
+        <div id="menuModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>📚 Menu</h3>
+                    <button class="btn-close" id="closeMenuBtn">✕</button>
+                </div>
+                <div class="menu-list">
+                    <button class="menu-item" id="menuImport">
+                        <span class="menu-icon">📥</span>
+                        <span>Import từ vựng</span>
+                    </button>
+                    <button class="menu-item" id="menuSources">
+                        <span class="menu-icon">📁</span>
+                        <span>Quản lý Sources</span>
+                    </button>
+                    <button class="menu-item" id="menuLearned">
+                        <span class="menu-icon">✓</span>
+                        <span>Từ đã học</span>
+                    </button>
+                    <button class="menu-item" id="menuHome">
+                        <span class="menu-icon">🏠</span>
+                        <span>Trang chủ</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sources Modal -->
+        <div id="sourcesModal" class="modal">
+            <div class="modal-content modal-large">
+                <div class="modal-header">
+                    <h3>📁 Quản lý Sources</h3>
+                    <button class="btn-close" id="closeSourcesBtn">✕</button>
+                </div>
+                <div class="sources-list" id="sourcesList">
+                    <p class="empty-message">Chưa có source nào</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Import Modal -->
+        <div id="importModal" class="modal">
+            <div class="modal-content modal-large">
+                <div class="modal-header">
+                    <h3>📥 Import từ vựng</h3>
+                    <button class="btn-close" id="closeImportBtn">✕</button>
+                </div>
+                
+                <div class="import-form">
+                    <div class="form-group">
+                        <label for="sourceNameInput">Tên bộ từ vựng:</label>
+                        <input 
+                            type="text" 
+                            id="sourceNameInput" 
+                            class="input-text" 
+                            placeholder="VD: TOEIC Basic..."
+                        >
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="wordsJsonInput">JSON array:</label>
+                        <textarea 
+                            id="wordsJsonInput" 
+                            class="input-textarea" 
+                            rows="10"
+                            placeholder='[{"word": "hello", ...}]'
+                        ></textarea>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button id="validateJsonBtn" class="btn-secondary">🔍 Kiểm tra</button>
+                        <button id="importJsonBtn" class="btn-primary">💾 Lưu</button>
+                    </div>
+                    
+                    <div id="importStatus" class="import-status"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Learned Words Modal -->
+        <div id="learnedModal" class="modal">
+            <div class="modal-content modal-large">
+                <div class="modal-header">
+                    <h3>✓ Từ đã học (<span id="learnedCount">0</span>)</h3>
+                    <button class="btn-close" id="closeLearnedBtn">✕</button>
+                </div>
+                
+                <div class="learned-filter">
+                    <select id="learnedSourceFilter" class="source-select-full">
+                        <option value="">Tất cả sources</option>
+                    </select>
+                </div>
+                
+                <div id="learnedList" class="learned-list">
+                    <p class="empty-message">Chưa có từ nào được đánh dấu đã học</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app-sources-mobile.js"></script>
+</body>
+</html>

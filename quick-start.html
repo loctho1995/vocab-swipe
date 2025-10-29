@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vocab Swipe - Quick Start</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            font-size: 2rem;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .feature-list {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+        
+        .feature-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+            color: #333;
+        }
+        
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .emoji {
+            margin-right: 8px;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin: 5px;
+            text-align: center;
+        }
+        
+        .btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #764ba2;
+        }
+        
+        .btn-secondary:hover {
+            background: #653a8f;
+        }
+        
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        
+        .info-box {
+            background: #f0f4ff;
+            border: 2px solid #667eea;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .info-box h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .info-box code {
+            background: #e0e7ff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 640px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .actions {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 Vocab Swipe</h1>
+        <p class="subtitle">Học từ vựng Anh-Việt với Sources Management</p>
+        
+        <ul class="feature-list">
+            <li><span class="emoji">📁</span> Quản lý nhiều bộ từ vựng (Sources)</li>
+            <li><span class="emoji">📥</span> Import từ file JSON có cấu trúc</li>
+            <li><span class="emoji">📊</span> Theo dõi tiến độ học tập chi tiết</li>
+            <li><span class="emoji">👆</span> Swipe gesture: Trái = Đã học, Phải = Bỏ qua</li>
+            <li><span class="emoji">🔊</span> Phát âm với audio tùy chỉnh</li>
+            <li><span class="emoji">📖</span> Xem lịch sử từ đã học</li>
+            <li><span class="emoji">💾</span> Lưu trữ local - không cần internet</li>
+        </ul>
+        
+        <div class="info-box">
+            <h3>🚀 Bắt đầu nhanh:</h3>
+            <p>1. Mở ứng dụng</p>
+            <p>2. Click "Import từ vựng"</p>
+            <p>3. Dán JSON từ file trong folder <code>sources/</code></p>
+            <p>4. File sẽ tự động tải về - lưu lại vào <code>sources/</code></p>
+            <p>5. Bắt đầu học!</p>
+        </div>
+        
+        <div class="actions">
+            <a href="index.html" class="btn btn-secondary">
+                🏠 Trang chủ
+            </a>
+            <a href="index-sources.html" class="btn">
+                🎯 Mở ứng dụng
+            </a>
+            <a href="README-sources.md" class="btn btn-secondary" target="_blank">
+                📖 Đọc hướng dẫn
+            </a>
+        </div>
+        
+        <div class="info-box" style="margin-top: 30px;">
+            <h3>📦 Sample Data</h3>
+            <p>Trong folder <code>sources/</code> có 2 file JSON mẫu:</p>
+            <p style="margin-top: 10px;">
+                <strong>1. sample-words.json (10 từ):</strong><br>
+                <span style="font-size: 0.85rem;">proactive, active, positive, negative, emphasize, achieve, efficient, innovative, collaborate, persistent</span>
+            </p>
+            <p style="margin-top: 10px;">
+                <strong>2. business-english.json (8 từ):</strong><br>
+                <span style="font-size: 0.85rem;">negotiate, implement, stakeholder, revenue, leverage, strategic, benchmark, delegate</span>
+            </p>
+        </div>
+    </div>
+</body>
+</html>
