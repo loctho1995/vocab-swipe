@@ -1,0 +1,26 @@
+app: vocab-swipe
+services:
+  - name: web
+    type: web
+    instance_type: nano
+    ports:
+      - port: 8000
+        protocol: http
+    routes:
+      - path: /
+        port: 8000
+    env:
+      - key: PORT
+        value: "8000"
+      - key: NODE_ENV
+        value: production
+    build:
+      type: buildpack
+      buildpack: heroku/nodejs
+    run:
+      command: npm start
+    regions:
+      - fra
+    scaling:
+      min: 1
+      max: 1
