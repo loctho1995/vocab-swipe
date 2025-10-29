@@ -746,6 +746,21 @@ function openEditSourceModal(sourceName) {
     document.getElementById('editSourceName').textContent = sourceName;
     document.getElementById('editSourceCount').textContent = `${source.totalWords} từ`;
     
+    // Clear forms
+    document.getElementById('newWord').value = '';
+    document.getElementById('newWordType').value = '';
+    document.getElementById('newPronounce').value = '';
+    document.getElementById('newMeaning').value = '';
+    document.getElementById('newTranslateVN').value = '';
+    document.getElementById('bulkJsonInput').value = '';
+    document.getElementById('bulkImportStatus').textContent = '';
+    
+    // Reset to manual tab
+    document.querySelectorAll('.edit-tab').forEach(tab => tab.classList.remove('active'));
+    document.querySelectorAll('.edit-tab-content').forEach(content => content.classList.remove('active'));
+    document.querySelector('[data-tab="manual"]').classList.add('active');
+    document.getElementById('manualTab').classList.add('active');
+    
     // Render words list
     renderEditWordsList();
     
@@ -865,6 +880,106 @@ async function addWordToSource() {
     }
 }
 
+// Bulk import JSON
+function validateBulkJson() {
+    const jsonInput = document.getElementById('bulkJsonInput').value.trim();
+    const status = document.getElementById('bulkImportStatus');
+    
+    if (!jsonInput) {
+        status.className = 'import-status error';
+        status.textContent = '⚠️ Vui lòng nhập JSON';
+        return false;
+    }
+    
+    try {
+        const words = JSON.parse(jsonInput);
+        
+        if (!Array.isArray(words)) {
+            throw new Error('JSON phải là một array');
+        }
+        
+        if (words.length === 0) {
+            throw new Error('Array không được rỗng');
+        }
+        
+        // Validate structure
+        const requiredFields = ['word', 'wordType', 'meaning', 'translateVN'];
+        
+        for (let i = 0; i < words.length; i++) {
+            const word = words[i];
+            for (const field of requiredFields) {
+                if (!word[field]) {
+                    throw new Error(`Từ thứ ${i + 1}: Thiếu field bắt buộc "${field}"`);
+                }
+            }
+        }
+        
+        status.className = 'import-status success';
+        status.textContent = `✓ Hợp lệ! ${words.length} từ`;
+        return true;
+    } catch (error) {
+        status.className = 'import-status error';
+        status.textContent = `⚠️ Lỗi: ${error.message}`;
+        return false;
+    }
+}
+
+async function importBulkJson() {
+    const jsonInput = document.getElementById('bulkJsonInput').value.trim();
+    const status = document.getElementById('bulkImportStatus');
+    
+    if (!validateBulkJson()) return;
+    
+    try {
+        const words = JSON.parse(jsonInput);
+        const source = sources[currentEditingSource];
+        
+        // Add all words to source
+        words.forEach(word => {
+            const newWord = {
+                word: word.word,
+                wordType: word.wordType,
+                pronounce: word.pronounce || '',
+                meaning: word.meaning,
+                translateVN: word.translateVN,
+                synonyms: word.synonyms || [],
+                antonyms: word.antonyms || [],
+                forms: word.forms || [],
+                notes: word.notes || ''
+            };
+            source.words.push(newWord);
+        });
+        
+        source.totalWords = source.words.length;
+        
+        // Save to server
+        const success = await saveSourceToServer(currentEditingSource, source.words);
+        
+        if (success) {
+            status.className = 'import-status success';
+            status.textContent = `✓ Đã thêm ${words.length} từ!`;
+            
+            // Update count
+            document.getElementById('editSourceCount').textContent = `${source.totalWords} từ`;
+            
+            // Clear form
+            document.getElementById('bulkJsonInput').value = '';
+            
+            // Refresh list
+            renderEditWordsList();
+            
+            setTimeout(() => {
+                status.textContent = '';
+            }, 3000);
+        } else {
+            throw new Error('Lưu thất bại');
+        }
+    } catch (error) {
+        status.className = 'import-status error';
+        status.textContent = `⚠️ Lỗi: ${error.message}`;
+    }
+}
+
 // ============ EDIT SOURCE EVENT LISTENERS ============
 document.getElementById('closeEditSourceBtn').addEventListener('click', () => {
     hideModal('editSourceModal');
@@ -873,6 +988,32 @@ document.getElementById('closeEditSourceBtn').addEventListener('click', () => {
 });
 
 document.getElementById('addWordBtn').addEventListener('click', addWordToSource);
+
+document.getElementById('validateBulkBtn').addEventListener('click', validateBulkJson);
+
+document.getElementById('importBulkBtn').addEventListener('click', importBulkJson);
+
+// Tab switching
+document.querySelectorAll('.edit-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        const tabName = tab.dataset.tab;
+        
+        // Update tabs
+        document.querySelectorAll('.edit-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        
+        // Update content
+        document.querySelectorAll('.edit-tab-content').forEach(content => {
+            content.classList.remove('active');
+        });
+        
+        if (tabName === 'manual') {
+            document.getElementById('manualTab').classList.add('active');
+        } else if (tabName === 'json') {
+            document.getElementById('jsonTab').classList.add('active');
+        }
+    });
+});
 
 // ============ INIT ============
 async function init() {

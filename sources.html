@@ -178,19 +178,48 @@
                         </div>
                     </div>
                     
-                    <!-- Add New Word Form -->
-                    <div class="add-word-form">
-                        <h5>➕ Thêm từ mới</h5>
-                        <div class="form-row">
-                            <input type="text" id="newWord" class="input-text" placeholder="Từ tiếng Anh *">
-                            <input type="text" id="newWordType" class="input-text" placeholder="Loại từ *">
+                    <!-- Tabs -->
+                    <div class="edit-tabs">
+                        <button class="edit-tab active" data-tab="manual">✏️ Thêm thủ công</button>
+                        <button class="edit-tab" data-tab="json">📋 Import JSON</button>
+                    </div>
+                    
+                    <!-- Tab Content: Manual Add -->
+                    <div class="edit-tab-content active" id="manualTab">
+                        <div class="add-word-form">
+                            <h5>➕ Thêm từ mới</h5>
+                            <div class="form-row">
+                                <input type="text" id="newWord" class="input-text" placeholder="Từ tiếng Anh *">
+                                <input type="text" id="newWordType" class="input-text" placeholder="Loại từ *">
+                            </div>
+                            <div class="form-row">
+                                <input type="text" id="newPronounce" class="input-text" placeholder="Phát âm">
+                            </div>
+                            <textarea id="newMeaning" class="input-textarea" rows="2" placeholder="Định nghĩa tiếng Anh *"></textarea>
+                            <textarea id="newTranslateVN" class="input-textarea" rows="2" placeholder="Nghĩa tiếng Việt *"></textarea>
+                            <button id="addWordBtn" class="btn-primary full-width">➕ Thêm từ</button>
                         </div>
-                        <div class="form-row">
-                            <input type="text" id="newPronounce" class="input-text" placeholder="Phát âm">
+                    </div>
+                    
+                    <!-- Tab Content: JSON Import -->
+                    <div class="edit-tab-content" id="jsonTab">
+                        <div class="add-word-form">
+                            <h5>📋 Import JSON (Nhiều từ cùng lúc)</h5>
+                            <p style="font-size: 0.8rem; color: #666; margin-bottom: 8px;">
+                                Dán JSON array các từ vào bên dưới. Có thể import 1 từ hoặc nhiều từ cùng lúc.
+                            </p>
+                            <textarea 
+                                id="bulkJsonInput" 
+                                class="input-textarea" 
+                                rows="8"
+                                placeholder='[{"word": "example", "wordType": "noun", "meaning": "...", "translateVN": "..."}]'
+                            ></textarea>
+                            <div class="form-actions">
+                                <button id="validateBulkBtn" class="btn-secondary">🔍 Kiểm tra</button>
+                                <button id="importBulkBtn" class="btn-primary">➕ Thêm tất cả</button>
+                            </div>
+                            <div id="bulkImportStatus" class="import-status"></div>
                         </div>
-                        <textarea id="newMeaning" class="input-textarea" rows="2" placeholder="Định nghĩa tiếng Anh *"></textarea>
-                        <textarea id="newTranslateVN" class="input-textarea" rows="2" placeholder="Nghĩa tiếng Việt *"></textarea>
-                        <button id="addWordBtn" class="btn-primary full-width">➕ Thêm từ</button>
                     </div>
                     
                     <!-- Words List -->
