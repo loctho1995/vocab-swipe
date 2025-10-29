@@ -8,13 +8,14 @@
 </head>
 <body>
     <div class="app-container">
-        <!-- Compact Header -->
+        <!-- Compact Header - No Title -->
         <header class="header">
-            <button id="menuBtn" class="btn-menu" title="Menu">☰</button>
-            <select id="currentSource" class="source-select">
-                <option value="">Chọn bộ từ...</option>
-            </select>
-            <button id="learnedMenuBtn" class="btn-icon" title="Từ đã học">✓</button>
+            <button id="menuBtn" class="btn-icon" title="Menu">☰</button>
+            <button id="sourceBtn" class="btn-source" title="Chọn source">
+                <span id="sourceLabel">Chọn bộ từ...</span>
+                <span class="dropdown-icon">▼</span>
+            </button>
+            <button id="learnedBtn" class="btn-icon" title="Đã học">✓</button>
         </header>
 
         <!-- Loading State -->
@@ -26,13 +27,13 @@
         <!-- Main Card -->
         <div id="mainCard" class="card-container" style="display: none;">
             <div class="swipe-card" id="swipeCard">
-                <!-- Word Header -->
+                <!-- Word Header - Compact -->
                 <div class="word-header">
                     <div class="word-info">
                         <h2 class="word-text" id="wordText">—</h2>
                         <div class="word-meta">
                             <span class="word-type" id="wordType">—</span>
-                            <span class="phonetic" id="phonetic">—</span>
+                            <span class="phonetic" id="phonetic"></span>
                         </div>
                     </div>
                     <button id="audioBtn" class="btn-audio" title="Phát âm">🔊</button>
@@ -40,48 +41,49 @@
 
                 <!-- Vietnamese Translation -->
                 <div class="translation-box">
-                    <div class="section-label">🇻🇳 Tiếng Việt</div>
+                    <div class="section-label">🇻🇳 Nghĩa</div>
                     <div class="translation-text" id="translationText">—</div>
                 </div>
 
                 <!-- English Meaning -->
                 <div class="definition-box">
-                    <div class="section-label">📖 English</div>
+                    <div class="section-label">📖 Định nghĩa</div>
                     <div class="definition-text" id="definitionText">—</div>
                 </div>
 
-                <!-- Word Forms -->
-                <div class="compact-section" id="wordForms" style="display: none;">
-                    <div class="section-label">🔄 Các dạng từ</div>
-                    <div class="chip-container" id="wordFormsChips"></div>
+                <!-- Word Forms - Compact -->
+                <div class="compact-section" id="formsSection" style="display: none;">
+                    <div class="section-label">📝 Các dạng từ</div>
+                    <div class="chip-container" id="formsChips"></div>
                 </div>
 
-                <!-- Synonyms -->
+                <!-- Synonyms - Compact -->
                 <div class="compact-section" id="synonymsSection" style="display: none;">
-                    <div class="section-label">🔗 Đồng nghĩa</div>
+                    <div class="section-label">🔗 Từ đồng nghĩa</div>
                     <div class="chip-container" id="synonymsChips"></div>
                 </div>
 
-                <!-- Antonyms -->
+                <!-- Antonyms - Compact -->
                 <div class="compact-section" id="antonymsSection" style="display: none;">
-                    <div class="section-label">↔️ Trái nghĩa</div>
+                    <div class="section-label">↔️ Từ trái nghĩa</div>
                     <div class="chip-container" id="antonymsChips"></div>
                 </div>
 
-                <!-- Notes -->
+                <!-- Notes - Compact -->
                 <div class="notes-box" id="notesBox" style="display: none;">
                     <div class="section-label">💡 Ghi chú</div>
                     <div class="notes-text" id="notesText">—</div>
                 </div>
 
-                <!-- Actions -->
+                <!-- Actions - Simplified -->
                 <div class="card-actions">
-                    <button id="learnedBtn" class="btn-learned">✓ Đã học</button>
+                    <button id="aiBtn" class="btn-ai">🤖 Hỏi AI</button>
+                    <button id="markLearnedBtn" class="btn-learned">✓ Đã học</button>
                 </div>
 
-                <!-- Swipe Instruction -->
+                <!-- Swipe Instruction - More compact -->
                 <div class="swipe-instruction">
-                    👈 Vuốt trái = Đã học
+                    👈 Vuốt trái để đánh dấu đã học
                 </div>
             </div>
 
@@ -93,53 +95,67 @@
         <div id="emptyState" class="empty-state" style="display: none;">
             <div class="empty-icon">📚</div>
             <h2>Chưa có bộ từ vựng</h2>
-            <p>Hãy import hoặc tạo bộ từ để bắt đầu học!</p>
+            <p>Hãy import hoặc tạo bộ từ vựng để bắt đầu học!</p>
             <button id="openImportBtn" class="btn-primary">📥 Import từ vựng</button>
         </div>
 
         <!-- Completion State -->
         <div id="completionState" class="empty-state" style="display: none;">
             <div class="empty-icon">🎉</div>
-            <h2>Chúc mừng!</h2>
-            <p id="completionText">Bạn đã học xong bộ từ này!</p>
-            <button id="resetBtn" class="btn-primary">🔄 Học lại</button>
+            <h2>Hoàn thành!</h2>
+            <p id="completionText">Bạn đã học xong tất cả từ!</p>
+            <button id="resetBtn" class="btn-primary">🔄 Học lại từ đầu</button>
         </div>
 
         <!-- Menu Modal -->
         <div id="menuModal" class="modal">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h3>📚 Menu</h3>
+                    <h3>Menu</h3>
                     <button class="btn-close" id="closeMenuBtn">✕</button>
                 </div>
                 <div class="menu-list">
-                    <button class="menu-item" id="menuImport">
-                        <span class="menu-icon">📥</span>
-                        <span>Import từ vựng</span>
-                    </button>
-                    <button class="menu-item" id="menuSources">
+                    <button class="menu-item" id="manageSourcesBtn">
                         <span class="menu-icon">📁</span>
                         <span>Quản lý Sources</span>
                     </button>
-                    <button class="menu-item" id="menuLearned">
+                    <button class="menu-item" id="importBtn">
+                        <span class="menu-icon">📥</span>
+                        <span>Import từ vựng</span>
+                    </button>
+                    <button class="menu-item" id="viewLearnedBtn">
                         <span class="menu-icon">✓</span>
                         <span>Từ đã học</span>
                     </button>
-                    <button class="menu-item" id="menuHome">
+                    <button class="menu-item" id="homeBtn">
                         <span class="menu-icon">🏠</span>
-                        <span>Trang chủ</span>
+                        <span>Về trang chủ</span>
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- Sources Modal -->
+        <!-- Source Selection Modal -->
+        <div id="sourceModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Chọn bộ từ vựng</h3>
+                    <button class="btn-close" id="closeSourceBtn">✕</button>
+                </div>
+                <div id="sourceList" class="source-list">
+                    <p class="empty-message">Chưa có source nào</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sources Management Modal -->
         <div id="sourcesModal" class="modal">
             <div class="modal-content modal-large">
                 <div class="modal-header">
                     <h3>📁 Quản lý Sources</h3>
                     <button class="btn-close" id="closeSourcesBtn">✕</button>
                 </div>
+                
                 <div class="sources-list" id="sourcesList">
                     <p class="empty-message">Chưa có source nào</p>
                 </div>
@@ -161,23 +177,23 @@
                             type="text" 
                             id="sourceNameInput" 
                             class="input-text" 
-                            placeholder="VD: TOEIC Basic..."
+                            placeholder="Ví dụ: TOEIC Basic, IELTS Advanced..."
                         >
                     </div>
                     
                     <div class="form-group">
-                        <label for="wordsJsonInput">JSON array:</label>
+                        <label for="wordsJsonInput">Dán JSON array của các từ vựng:</label>
                         <textarea 
                             id="wordsJsonInput" 
                             class="input-textarea" 
-                            rows="10"
-                            placeholder='[{"word": "hello", ...}]'
+                            rows="8"
+                            placeholder='[{"word": "emphasize", "wordType": "verb", "meaning": "...", "translateVN": "nhấn mạnh"}]'
                         ></textarea>
                     </div>
                     
                     <div class="form-actions">
                         <button id="validateJsonBtn" class="btn-secondary">🔍 Kiểm tra</button>
-                        <button id="importJsonBtn" class="btn-primary">💾 Lưu</button>
+                        <button id="importJsonBtn" class="btn-primary">💾 Lưu Source</button>
                     </div>
                     
                     <div id="importStatus" class="import-status"></div>
@@ -189,7 +205,7 @@
         <div id="learnedModal" class="modal">
             <div class="modal-content modal-large">
                 <div class="modal-header">
-                    <h3>✓ Từ đã học (<span id="learnedCount">0</span>)</h3>
+                    <h3>✓ Từ đã học</h3>
                     <button class="btn-close" id="closeLearnedBtn">✕</button>
                 </div>
                 

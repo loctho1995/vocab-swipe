@@ -1,5 +1,8 @@
 /**
- * Vocab Swipe Mobile - Random Learning with Learned Words Management
+ * Vocab Swipe Mobile Optimized
+ * - Random learning (no progress tracking)
+ * - Learned words management
+ * - Compact UI for mobile
  */
 
 // ============ CONFIG ============
@@ -11,16 +14,15 @@ const API_ENDPOINTS = {
 };
 
 const STORAGE = {
-    LEARNED: 'vocab_learned_v2', // { sourceName: [word1, word2, ...] }
-    CURRENT_SOURCE: 'vocab_current_source_v2'
+    LEARNED: 'vocab_learned_v3', // { sourceName: [word1, word2, ...] }
+    CURRENT_SOURCE: 'vocab_current_source_v3'
 };
 
 // ============ STATE ============
 let sources = {}; // { sourceName: { words: [], fileName: string } }
 let learnedWords = {}; // { sourceName: [word1, word2, ...] }
-let currentSource = '';
+let currentSourceName = '';
 let currentWord = null;
-let availableWords = []; // Words không có trong learned list
 
 // ============ STORAGE UTILS ============
 function saveToStorage(key, data) {
@@ -155,33 +157,27 @@ function getTotalWords(sourceName) {
     return sources[sourceName] ? sources[sourceName].totalWords : 0;
 }
 
-// ============ WORD SELECTION ============
-function updateAvailableWords() {
-    if (!currentSource || !sources[currentSource]) {
-        availableWords = [];
-        return;
+// ============ WORD SELECTION - RANDOM WITHOUT LEARNED ============
+function getRandomWord() {
+    if (!currentSourceName || !sources[currentSourceName]) {
+        return null;
     }
     
-    const allWords = sources[currentSource].words;
-    const learned = learnedWords[currentSource] || [];
+    const allWords = sources[currentSourceName].words;
+    const learned = learnedWords[currentSourceName] || [];
     
     // Filter out learned words
-    availableWords = allWords.filter(word => {
+    const availableWords = allWords.filter(word => {
         const wordKey = word.word.toLowerCase();
         return !learned.some(w => w.toLowerCase() === wordKey);
     });
-}
-
-function getRandomWord() {
-    updateAvailableWords();
     
-    // If no available words, check if we need to reset
+    // If all words learned, reset
+    if (availableWords.length === 0 && allWords.length > 0) {
+        return null; // Show completion screen
+    }
+    
     if (availableWords.length === 0) {
-        const totalWords = getTotalWords(currentSource);
-        if (totalWords > 0) {
-            // All words learned, offer to reset
-            return null;
-        }
         return null;
     }
     
@@ -209,7 +205,7 @@ function showCompletionScreen() {
     const completion = document.getElementById('completionState');
     const text = document.getElementById('completionText');
     
-    text.textContent = `Bạn đã học xong ${getTotalWords(currentSource)} từ trong bộ "${currentSource}"!`;
+    text.textContent = `Bạn đã học xong ${getTotalWords(currentSourceName)} từ trong bộ "${currentSourceName}"!`;
     completion.style.display = 'flex';
 }
 
@@ -232,7 +228,7 @@ function renderWord(word) {
     document.getElementById('definitionText').textContent = word.meaning || '—';
     
     // Word Forms
-    renderChips('wordForms', 'wordFormsChips', word.forms);
+    renderChips('formsSection', 'formsChips', word.forms);
     
     // Synonyms
     renderChips('synonymsSection', 'synonymsChips', word.synonyms);
@@ -265,26 +261,19 @@ function renderChips(sectionId, containerId, items) {
     }
 }
 
-function updateSourceSelector() {
-    const select = document.getElementById('currentSource');
-    const sourceNames = Object.keys(sources);
+function updateSourceButton() {
+    const label = document.getElementById('sourceLabel');
     
-    select.innerHTML = '<option value="">Chọn bộ từ...</option>';
-    
-    sourceNames.forEach(name => {
-        const option = document.createElement('option');
-        const learned = getLearnedCount(name);
-        const total = getTotalWords(name);
-        option.value = name;
-        option.textContent = `${name} (${learned}/${total})`;
-        select.appendChild(option);
-    });
-    
-    if (currentSource && sources[currentSource]) {
-        select.value = currentSource;
+    if (currentSourceName) {
+        const learned = getLearnedCount(currentSourceName);
+        const total = getTotalWords(currentSourceName);
+        label.textContent = `${currentSourceName} (${learned}/${total})`;
+    } else {
+        label.textContent = 'Chọn bộ từ...';
     }
 }
 
+// ============ LOADING/MODAL HELPERS ============
 function showLoading() {
     document.getElementById('loadingScreen').style.display = 'flex';
 }
@@ -295,68 +284,9 @@ function hideLoading() {
 
 function showLoadingText(text) {
     document.getElementById('loadingText').textContent = text;
+    showLoading();
 }
 
-// ============ SWIPE GESTURES ============
-let touchStartX = 0;
-let touchStartY = 0;
-let touchEndX = 0;
-let touchEndY = 0;
-
-function handleSwipe() {
-    const diffX = touchEndX - touchStartX;
-    const diffY = touchEndY - touchStartY;
-    
-    // Check if horizontal swipe (ignore if vertical)
-    if (Math.abs(diffX) < 80 || Math.abs(diffY) > Math.abs(diffX)) return;
-    
-    const card = document.getElementById('swipeCard');
-    const indicator = document.getElementById('swipeIndicator');
-    
-    if (diffX < 0) {
-        // Swipe left = Learned
-        card.style.transform = 'translateX(-100%)';
-        indicator.textContent = '✓ Đã học';
-        indicator.classList.add('show');
-        
-        setTimeout(() => {
-            markWordAsLearned(currentSource, currentWord);
-            card.style.transform = '';
-            indicator.classList.remove('show');
-            loadNextWord();
-        }, 300);
-    }
-}
-
-function setupSwipeGestures() {
-    const card = document.getElementById('swipeCard');
-    
-    card.addEventListener('touchstart', (e) => {
-        touchStartX = e.changedTouches[0].screenX;
-        touchStartY = e.changedTouches[0].screenY;
-    });
-    
-    card.addEventListener('touchend', (e) => {
-        touchEndX = e.changedTouches[0].screenX;
-        touchEndY = e.changedTouches[0].screenY;
-        handleSwipe();
-    });
-}
-
-// ============ AUDIO ============
-function playAudio() {
-    if (!currentWord) return;
-    
-    const text = currentWord.word;
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'en-US';
-    utterance.rate = 0.8;
-    
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(utterance);
-}
-
-// ============ MODALS ============
 function showModal(modalId) {
     document.getElementById(modalId).classList.add('show');
 }
@@ -365,7 +295,84 @@ function hideModal(modalId) {
     document.getElementById(modalId).classList.remove('show');
 }
 
-// ============ MENU HANDLERS ============
+// ============ AUDIO ============
+function playAudio() {
+    if (!currentWord) return;
+    
+    const word = currentWord.word;
+    const utterance = new SpeechSynthesisUtterance(word);
+    utterance.lang = 'en-US';
+    utterance.rate = 0.8;
+    window.speechSynthesis.speak(utterance);
+}
+
+// ============ SWIPE GESTURES ============
+function setupSwipeGestures() {
+    const card = document.getElementById('swipeCard');
+    const indicator = document.getElementById('swipeIndicator');
+    
+    let startX = 0;
+    let currentX = 0;
+    let isDragging = false;
+    
+    // Detect if target is interactive element
+    function isInteractiveElement(target) {
+        return target.tagName === 'BUTTON' || 
+               target.tagName === 'A' ||
+               target.closest('button') ||
+               target.closest('a');
+    }
+    
+    card.addEventListener('touchstart', (e) => {
+        if (isInteractiveElement(e.target)) return;
+        
+        startX = e.touches[0].clientX;
+        isDragging = true;
+    }, { passive: true });
+    
+    card.addEventListener('touchmove', (e) => {
+        if (!isDragging || isInteractiveElement(e.target)) return;
+        
+        currentX = e.touches[0].clientX;
+        const diffX = currentX - startX;
+        
+        // Only allow left swipe
+        if (diffX < 0) {
+            card.style.transform = `translateX(${diffX}px) rotate(${diffX / 20}deg)`;
+        }
+    }, { passive: true });
+    
+    card.addEventListener('touchend', (e) => {
+        if (!isDragging) return;
+        
+        isDragging = false;
+        const diffX = currentX - startX;
+        
+        // Left swipe - Mark as learned
+        if (diffX < -80) {
+            card.style.transform = 'translateX(-500px) rotate(-30deg)';
+            
+            indicator.textContent = '✓ Đã học';
+            indicator.classList.add('show');
+            
+            markWordAsLearned(currentSourceName, currentWord);
+            
+            setTimeout(() => {
+                card.style.transform = '';
+                indicator.classList.remove('show');
+                loadNextWord();
+            }, 300);
+        } else {
+            // Reset
+            card.style.transform = '';
+        }
+        
+        startX = 0;
+        currentX = 0;
+    }, { passive: true });
+}
+
+// ============ HEADER ACTIONS ============
 document.getElementById('menuBtn').addEventListener('click', () => {
     showModal('menuModal');
 });
@@ -374,66 +381,114 @@ document.getElementById('closeMenuBtn').addEventListener('click', () => {
     hideModal('menuModal');
 });
 
-document.getElementById('menuImport').addEventListener('click', () => {
-    hideModal('menuModal');
-    showModal('importModal');
+document.getElementById('sourceBtn').addEventListener('click', () => {
+    showModal('sourceModal');
+    renderSourceSelection();
 });
 
-document.getElementById('menuSources').addEventListener('click', () => {
-    hideModal('menuModal');
-    renderSourcesList();
-    showModal('sourcesModal');
+document.getElementById('closeSourceBtn').addEventListener('click', () => {
+    hideModal('sourceModal');
 });
 
-document.getElementById('menuLearned').addEventListener('click', () => {
-    hideModal('menuModal');
-    renderLearnedList();
+document.getElementById('learnedBtn').addEventListener('click', () => {
     showModal('learnedModal');
-});
-
-document.getElementById('menuHome').addEventListener('click', () => {
-    window.location.href = 'index.html';
-});
-
-// ============ LEARNED WORDS MODAL ============
-document.getElementById('learnedMenuBtn').addEventListener('click', () => {
+    updateLearnedFilter();
     renderLearnedList();
-    showModal('learnedModal');
 });
 
 document.getElementById('closeLearnedBtn').addEventListener('click', () => {
     hideModal('learnedModal');
 });
 
-function renderLearnedList(filterSource = '') {
-    const list = document.getElementById('learnedList');
-    const filter = document.getElementById('learnedSourceFilter');
-    const count = document.getElementById('learnedCount');
+// ============ SOURCE SELECTION ============
+function renderSourceSelection() {
+    const list = document.getElementById('sourceList');
+    const sourceNames = Object.keys(sources);
     
-    // Update filter dropdown
-    filter.innerHTML = '<option value="">Tất cả sources</option>';
-    Object.keys(sources).forEach(name => {
-        const option = document.createElement('option');
-        option.value = name;
-        option.textContent = name;
-        filter.appendChild(option);
-    });
-    
-    if (filterSource) {
-        filter.value = filterSource;
+    if (sourceNames.length === 0) {
+        list.innerHTML = '<p class="empty-message">Chưa có source nào</p>';
+        return;
     }
     
-    // Get all learned words
+    list.innerHTML = sourceNames.map(name => {
+        const learned = getLearnedCount(name);
+        const total = getTotalWords(name);
+        const isActive = name === currentSourceName;
+        
+        return `
+            <div class="source-item ${isActive ? 'active' : ''}" data-source="${name}">
+                <div class="source-name-info">
+                    <div class="source-name">${name}</div>
+                    <div class="source-stats">${learned}/${total} từ đã học</div>
+                </div>
+                ${isActive ? '<span class="source-check">✓</span>' : ''}
+            </div>
+        `;
+    }).join('');
+    
+    // Add event listeners
+    list.querySelectorAll('.source-item').forEach(item => {
+        item.addEventListener('click', () => {
+            const sourceName = item.dataset.source;
+            currentSourceName = sourceName;
+            saveToStorage(STORAGE.CURRENT_SOURCE, currentSourceName);
+            initLearnedForSource(currentSourceName);
+            updateSourceButton();
+            hideModal('sourceModal');
+            loadNextWord();
+        });
+    });
+}
+
+// ============ MENU ACTIONS ============
+document.getElementById('manageSourcesBtn').addEventListener('click', () => {
+    hideModal('menuModal');
+    showModal('sourcesModal');
+    renderSourcesList();
+});
+
+document.getElementById('importBtn').addEventListener('click', () => {
+    hideModal('menuModal');
+    showModal('importModal');
+});
+
+document.getElementById('viewLearnedBtn').addEventListener('click', () => {
+    hideModal('menuModal');
+    showModal('learnedModal');
+    updateLearnedFilter();
+    renderLearnedList();
+});
+
+document.getElementById('homeBtn').addEventListener('click', () => {
+    window.location.href = 'index.html';
+});
+
+// ============ LEARNED WORDS LIST ============
+function updateLearnedFilter() {
+    const filter = document.getElementById('learnedSourceFilter');
+    const sourceNames = Object.keys(sources);
+    
+    filter.innerHTML = '<option value="">Tất cả sources</option>' +
+        sourceNames.map(name => `<option value="${name}">${name}</option>`).join('');
+}
+
+function renderLearnedList(filterSource = '') {
+    const list = document.getElementById('learnedList');
+    
+    // Collect all learned words
     let allLearned = [];
+    
     Object.keys(learnedWords).forEach(sourceName => {
-        if (!filterSource || filterSource === sourceName) {
-            learnedWords[sourceName].forEach(word => {
-                allLearned.push({ word, source: sourceName });
-            });
-        }
+        const words = learnedWords[sourceName] || [];
+        words.forEach(word => {
+            allLearned.push({ word, source: sourceName });
+        });
     });
     
-    count.textContent = allLearned.length;
+    // Filter if needed
+    if (filterSource) {
+        allLearned = allLearned.filter(item => item.source === filterSource);
+    }
     
     if (allLearned.length === 0) {
         list.innerHTML = '<p class="empty-message">Chưa có từ nào được đánh dấu đã học</p>';
@@ -442,7 +497,7 @@ function renderLearnedList(filterSource = '') {
     
     list.innerHTML = allLearned.map(item => `
         <div class="learned-item">
-            <div>
+            <div class="learned-word-info">
                 <div class="learned-word">${item.word}</div>
                 <div class="learned-source">${item.source}</div>
             </div>
@@ -462,10 +517,9 @@ function renderLearnedList(filterSource = '') {
                 unmarkWordAsLearned(source, word);
                 renderLearnedList(filterSource);
                 
-                // Reload if current source
-                if (source === currentSource) {
-                    updateAvailableWords();
-                    updateSourceSelector();
+                // Update button if current source
+                if (source === currentSourceName) {
+                    updateSourceButton();
                 }
             }
         });
@@ -515,10 +569,10 @@ function renderSourcesList() {
     list.querySelectorAll('.btn-select').forEach(btn => {
         btn.addEventListener('click', () => {
             const sourceName = btn.dataset.source;
-            currentSource = sourceName;
-            saveToStorage(STORAGE.CURRENT_SOURCE, currentSource);
-            initLearnedForSource(currentSource);
-            updateSourceSelector();
+            currentSourceName = sourceName;
+            saveToStorage(STORAGE.CURRENT_SOURCE, currentSourceName);
+            initLearnedForSource(currentSourceName);
+            updateSourceButton();
             hideModal('sourcesModal');
             loadNextWord();
         });
@@ -535,11 +589,11 @@ function renderSourcesList() {
                 const success = await deleteSourceFromServer(fileName);
                 if (success) {
                     delete sources[sourceName];
-                    if (currentSource === sourceName) {
-                        currentSource = '';
+                    if (currentSourceName === sourceName) {
+                        currentSourceName = '';
                     }
                     renderSourcesList();
-                    updateSourceSelector();
+                    updateSourceButton();
                 }
             }
         });
@@ -616,7 +670,7 @@ document.getElementById('importJsonBtn').addEventListener('click', async () => {
             
             // Reload sources
             await fetchSourcesFromServer();
-            updateSourceSelector();
+            updateSourceButton();
             
             // Clear form
             setTimeout(() => {
@@ -635,10 +689,10 @@ document.getElementById('importJsonBtn').addEventListener('click', async () => {
 });
 
 // ============ ACTIONS ============
-document.getElementById('learnedBtn').addEventListener('click', () => {
+document.getElementById('markLearnedBtn').addEventListener('click', () => {
     if (!currentWord) return;
     
-    markWordAsLearned(currentSource, currentWord);
+    markWordAsLearned(currentSourceName, currentWord);
     
     const indicator = document.getElementById('swipeIndicator');
     indicator.textContent = '✓ Đã học';
@@ -650,29 +704,25 @@ document.getElementById('learnedBtn').addEventListener('click', () => {
     }, 500);
 });
 
+document.getElementById('aiBtn').addEventListener('click', () => {
+    if (!currentWord) return;
+    
+    const word = currentWord.word;
+    const url = `https://chatgpt.com/?q=${encodeURIComponent(`Về từ "${word}" \n1. Giải thích ý nghĩa chi tiết bằng tiếng Việt \n2. Hướng dẫn cách phát âm (phiên âm và mẹo phát âm) \n3. 5 đoạn hội thoại phổ biến sử dụng từ này (ngắn gọn, thực tế) \n4. Các cụm từ và collocations thường gặp`)}`;
+    window.open(url, '_blank');
+});
+
 document.getElementById('audioBtn').addEventListener('click', playAudio);
 
 document.getElementById('resetBtn').addEventListener('click', () => {
-    if (!currentSource) return;
+    if (!currentSourceName) return;
     
-    if (confirm(`Xóa tất cả từ đã học trong "${currentSource}" và học lại?`)) {
-        learnedWords[currentSource] = [];
+    if (confirm(`Xóa tất cả từ đã học trong "${currentSourceName}" và học lại?`)) {
+        learnedWords[currentSourceName] = [];
         saveLearned();
         document.getElementById('completionState').style.display = 'none';
         loadNextWord();
     }
-});
-
-// ============ SOURCE SELECTOR ============
-document.getElementById('currentSource').addEventListener('change', (e) => {
-    const sourceName = e.target.value;
-    
-    if (!sourceName) return;
-    
-    currentSource = sourceName;
-    saveToStorage(STORAGE.CURRENT_SOURCE, currentSource);
-    initLearnedForSource(currentSource);
-    loadNextWord();
 });
 
 // ============ INIT ============
@@ -689,15 +739,15 @@ async function init() {
     }
     
     // Load last source or first available
-    currentSource = loadFromStorage(STORAGE.CURRENT_SOURCE, '');
-    if (!sources[currentSource]) {
-        currentSource = Object.keys(sources)[0];
+    currentSourceName = loadFromStorage(STORAGE.CURRENT_SOURCE, '');
+    if (!sources[currentSourceName]) {
+        currentSourceName = Object.keys(sources)[0];
     }
     
-    saveToStorage(STORAGE.CURRENT_SOURCE, currentSource);
-    initLearnedForSource(currentSource);
+    saveToStorage(STORAGE.CURRENT_SOURCE, currentSourceName);
+    initLearnedForSource(currentSourceName);
     
-    updateSourceSelector();
+    updateSourceButton();
     setupSwipeGestures();
     loadNextWord();
 }
